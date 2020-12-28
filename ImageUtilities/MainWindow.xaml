@@ -1,0 +1,43 @@
+﻿<Window x:Class="ImageUtilities.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageUtilities"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="500" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Rectangle Grid.ColumnSpan="3" SizeChanged="Rectangle_SizeChanged">
+            <Rectangle.Fill>
+                <ImageBrush x:Name="BG" Stretch="None" Opacity=".5" TileMode="Tile" Viewport="0,0,.1,.1" ImageSource="/TileBackground.png"/>
+            </Rectangle.Fill>
+
+        </Rectangle>
+        <ScrollViewer Background="White">
+            <StackPanel>
+                <Button Click="Button_Click">Open File</Button>
+                <Button>Save File</Button>
+                <TextBlock Text="Tools"/>
+                <Button Click="Button_Click_1">Transparency</Button>
+            </StackPanel>
+        </ScrollViewer>
+        <Grid Grid.Column="1">
+            <Grid x:Name="CentralFrame">
+
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="2" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Preview"/>
+            <Image x:Name="PreviewImage" Grid.Row="1"/>
+        </Grid>
+    </Grid>
+</Window>
