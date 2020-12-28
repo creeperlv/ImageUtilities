@@ -21,9 +21,11 @@ namespace ImageUtilities
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow CurrentWindow;
         public MainWindow()
         {
             InitializeComponent();
+            CurrentWindow = this;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -63,6 +65,22 @@ namespace ImageUtilities
                 {
                 }
             }
+        }
+        public void DownSizeAll()
+        {
+            try
+            {
+                if (VariablePool.CurrentBitmap_DownSized is not null)
+                    VariablePool.CurrentBitmap_DownSized.Dispose();
+            }
+            catch (Exception)
+            {
+            }
+            if (VariablePool.CurrentBitmap.Width > 1024 && VariablePool.CurrentBitmap.Height > 1024)
+                VariablePool.CurrentBitmap_DownSized = Utilities.DownSize10X(VariablePool.CurrentBitmap);
+            else if (VariablePool.CurrentBitmap.Width > 512 && VariablePool.CurrentBitmap.Height > 512)
+                VariablePool.CurrentBitmap_DownSized = Utilities.DownSize5X(VariablePool.CurrentBitmap);
+            else VariablePool.CurrentBitmap_DownSized = VariablePool.CurrentBitmap.Clone(new System.Drawing.Rectangle(0,0,VariablePool.CurrentBitmap.Width, VariablePool.CurrentBitmap.Height), VariablePool.CurrentBitmap.PixelFormat);
         }
         public void UpdatePreview()
         {

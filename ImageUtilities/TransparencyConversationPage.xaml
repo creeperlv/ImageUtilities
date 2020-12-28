@@ -16,52 +16,54 @@
         </Grid.RowDefinitions>
         <TextBlock Text="Preview"/>
         <Image x:Name="Preview" Grid.Row="1"/>
-        <StackPanel Grid.Row="2" Background="White">
+        <StackPanel Grid.Row="2" Background="White" Name="FunctionArea">
             <ScrollViewer MaxHeight="300px">
             <StackPanel>
                 <TextBlock Text="Intensity" FontSize="18"/>
                 <Expander Header="MixColorTransparency">
                     <StackPanel>
-                        <CheckBox IsChecked="true" Name="MixColorTransparency">Enable Mix Color Transparency</CheckBox>
+                            <CheckBox IsChecked="true" Name="MixColorTransparency" Content="Enable Mix Color Transparency"></CheckBox>
                         <TextBlock Text="R"/>
-                        <Slider x:Name="R" Minimum="0" Value="255" Maximum="255" SmallChange="1"/>
+                            <Slider x:Name="R" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
                         <TextBlock Text="G"/>
-                        <Slider x:Name="G" Minimum="0" Value="255" Maximum="255" SmallChange="1"/>
+                            <Slider x:Name="G" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
                         <TextBlock Text="B"/>
-                        <Slider x:Name="B" Minimum="0" Value="255" Maximum="255" SmallChange="1"/>
+                            <Slider x:Name="B" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
                         <TextBlock Text="Alpha"/>
-                        <Slider x:Name="Alpha" Minimum="0" Value="255" Maximum="255" SmallChange="1"/>
+                        <Slider x:Name="Alpha" Minimum="0" Value="255" Maximum="1020" SmallChange="1" LargeChange="100"/>
                         <TextBlock Text="Cutout Mode"/>
                         <ComboBox Name="CutoutMode" SelectedIndex="0">
-                            <ComboBoxItem>No Cutout</ComboBoxItem>
-                            <ComboBoxItem>And</ComboBoxItem>
-                            <ComboBoxItem>Or</ComboBoxItem>
-                        </ComboBox>
+                                <ComboBoxItem Content="No Cutout"/>
+                                <ComboBoxItem Content="And"/>
+                                <ComboBoxItem Content="Or"/>
+                            </ComboBox>
                     </StackPanel>
                 </Expander>
                 <Expander Header="Transparency Cutout">
                     <StackPanel>
-                        <CheckBox x:Name="TransparencyCutout">Enable Transparency Cutout</CheckBox>
+                            <CheckBox x:Name="TransparencyCutout">
+                                <TextBlock Text="Enable Transparency Cutout"/>
+                            </CheckBox>
                         <TextBlock Text="R"/>
-                        <Slider x:Name="R1" Minimum="0" Value="255" Maximum="255" SmallChange="1"/>
+                            <Slider x:Name="R1" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
                         <TextBlock Text="G"/>
-                        <Slider x:Name="G1" Minimum="0" Value="255" Maximum="255" SmallChange="1"/>
+                            <Slider x:Name="G1" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
                         <TextBlock Text="B"/>
-                        <Slider x:Name="B1" Minimum="0" Value="255" Maximum="255" SmallChange="1"/>
-                        <ComboBox Name="CutoutModeTC" SelectedIndex="0">
-                            <ComboBoxItem>And</ComboBoxItem>
-                            <ComboBoxItem>Or</ComboBoxItem>
-                        </ComboBox>
+                            <Slider x:Name="B1" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
+                            <ComboBox Name="CutoutModeTC" SelectedIndex="0">
+                                <ComboBoxItem Content="And"/>
+                                <ComboBoxItem Content="Or"/>
+                            </ComboBox>
                     </StackPanel>
                 </Expander>
                     <Expander Header="More Options">
-                        <CheckBox x:Name="IsUseDownsize">Use Downsized Image for faster preview</CheckBox>
+                        <CheckBox x:Name="IsUseDownsize" Content="Use Downsized Image for faster preview"></CheckBox>
                     </Expander>
             </StackPanel>
             </ScrollViewer>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Content="View" Click="Button_Click"/>
-                <Button Content="Apply"/>
+                <Button Content="Apply" Click="Button_Click_1"/>
                 <Button Content="Cancel"/>
             </StackPanel>
         </StackPanel>

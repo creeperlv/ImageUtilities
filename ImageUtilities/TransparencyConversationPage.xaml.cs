@@ -43,6 +43,7 @@ namespace ImageUtilities
         Bitmap Current;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+
             try
             {
                 if (Current is not null)
@@ -51,6 +52,18 @@ namespace ImageUtilities
             catch (Exception)
             {
             }
+            Bitmap Operating = VariablePool.CurrentBitmap_DownSized;
+            if (IsUseDownsize.IsChecked == false)
+            {
+                Operating = VariablePool.CurrentBitmap;
+            }
+            Current = new Bitmap(Operating.Width, Operating.Height);
+            FunctionArea.IsEnabled = false;
+            ProcessImage(Operating, Current);
+
+        }
+        public void ProcessImage(Bitmap Processing, Bitmap OutputBitmap, Action action = null)
+        {
             RValue = (float)R.Value;
             GValue = (float)G.Value;
             BValue = (float)B.Value;
@@ -67,39 +80,31 @@ namespace ImageUtilities
             CutoutMode1 = CutoutMode.SelectedIndex;
             CutoutMode2 = CutoutModeTC.SelectedIndex;
             RGBIntensity = RIntensity + BIntensity + GIntensity;
-            Bitmap Operating = VariablePool.CurrentBitmap_DownSized;
-            if (IsUseDownsize.IsChecked == false)
-            {
-                Operating = VariablePool.CurrentBitmap;
-            }
-            Current = new Bitmap(Operating.Width, Operating.Height);
-            float GetIntensity(double value)
-            {
-                return (float)value / 255f;
-            }
-            (sender as Button).IsEnabled = false;
+
+            float GetIntensity(double value) => (float)value / 255f;
+
             Task.Run(() =>
             {
-                int WB = Operating.Width;
-                int H = Operating.Height;
+                int WB = Processing.Width;
+                int H = Processing.Height;
                 for (int w = 0; w < WB; w++)
                 {
                     for (int h = 0; h < H; h++)
                     {
-                        var c = Operating.GetPixel(w, h);
-                        Current.SetPixel(w, h, Process(c));
+                        var c = Processing.GetPixel(w, h);
+                        OutputBitmap.SetPixel(w, h, Process(c));
                     }
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    UpdateView();
-                    (sender as Button).IsEnabled = true;
+                    UpdateView(OutputBitmap);
+                    FunctionArea.IsEnabled = true;
+                    if (action is not null) action();
                 });
-                System.GC.Collect();
+                GC.Collect();
             });
-
         }
-        public void UpdateView()
+        public void UpdateView(Bitmap Current)
         {
             var ImgSrc = Utilities.ImageSourceFromBitmap(Current);
             Preview.Source = ImgSrc;
@@ -110,16 +115,18 @@ namespace ImageUtilities
             if (isTransparencyCutout)
             {
                 if (CutoutMode2 == 0)
+                {
                     if (c.R <= R1Value && c.G <= G1Value && c.B <= B1Value)
                     {
                         return Color.FromArgb(c.R, c.G, c.B, 0);
                     }
-                    else
+                }
+                else
                 if (CutoutMode2 == 1)
-                        if (c.R <= R1Value || c.G <= G1Value || c.B <= B1Value)
-                        {
-                            return Color.FromArgb(c.R, c.G, c.B, 0);
-                        }
+                    if (c.R <= R1Value || c.G <= G1Value || c.B <= B1Value)
+                    {
+                        return Color.FromArgb(c.R, c.G, c.B, 0);
+                    }
             }
             if (isMixColor)
             {
@@ -146,7 +153,7 @@ namespace ImageUtilities
                         }
 
                 }
-                var A = (byte)(Byte.MaxValue * AlphaIntensity);
+                var A = (byte)Math.Min((Byte.MaxValue * AlphaIntensity), Byte.MaxValue);
                 Color Result = Color.FromArgb(A, c.R, c.G, c.B);
                 return Result;
             }
@@ -162,6 +169,18 @@ namespace ImageUtilities
             catch (Exception)
             {
             }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Bitmap Operating = VariablePool.CurrentBitmap;
+            Current = new Bitmap(Operating.Width, Operating.Height);
+            FunctionArea.IsEnabled = false;
+            ProcessImage(Operating, VariablePool.CurrentBitmap, () =>
+            {
+                MainWindow.CurrentWindow.UpdatePreview();
+                MainWindow.CurrentWindow.DownSizeAll();
+            });
         }
     }
 }
