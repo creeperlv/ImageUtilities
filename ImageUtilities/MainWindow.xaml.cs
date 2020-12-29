@@ -95,6 +95,13 @@ namespace ImageUtilities
             System.GC.Collect();
         }
 
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            CentralFrame.Children.Clear();
+            CentralFrame.Children.Add(new Grayscale());
+            System.GC.Collect();
+        }
+
         private void Rectangle_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var x = (e.NewSize.Width / 100.0);

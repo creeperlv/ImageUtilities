@@ -24,6 +24,7 @@
                 <Button>Save File</Button>
                 <TextBlock Text="Tools"/>
                 <Button Click="Button_Click_1">Transparency</Button>
+                <Button Click="Button_Click_2">Grayscale</Button>
             </StackPanel>
         </ScrollViewer>
         <Grid Grid.Column="1">

@@ -18,48 +18,98 @@
         <Image x:Name="Preview" Grid.Row="1"/>
         <StackPanel Grid.Row="2" Background="White" Name="FunctionArea">
             <ScrollViewer MaxHeight="300px">
-            <StackPanel>
-                <TextBlock Text="Intensity" FontSize="18"/>
-                <Expander Header="MixColorTransparency">
-                    <StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Parameters" FontSize="18"/>
+                    <Expander Header="Mix Color Transparency Intensity">
+                        <StackPanel>
                             <CheckBox IsChecked="true" Name="MixColorTransparency" Content="Enable Mix Color Transparency"></CheckBox>
-                        <TextBlock Text="R"/>
-                            <Slider x:Name="R" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
-                        <TextBlock Text="G"/>
-                            <Slider x:Name="G" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
-                        <TextBlock Text="B"/>
-                            <Slider x:Name="B" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
-                        <TextBlock Text="Alpha"/>
-                        <Slider x:Name="Alpha" Minimum="0" Value="255" Maximum="1020" SmallChange="1" LargeChange="100"/>
-                        <TextBlock Text="Cutout Mode"/>
-                        <ComboBox Name="CutoutMode" SelectedIndex="0">
+                            <TextBlock Text="R"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="R" Minimum="0" Value="{Binding Text, ElementName=textBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="255" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="textBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="G"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="G" Minimum="0" Value="{Binding Text, ElementName=textBoxG, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="255" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="textBoxG" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="B"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="B" Minimum="0" Value="{Binding Text, ElementName=textBoxB, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="255" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="textBoxB" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="Alpha"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="Alpha" Minimum="0" Value="{Binding Text, ElementName=AlphaBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="1020" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="AlphaBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="Cutout Mode"/>
+                            <ComboBox Name="CutoutMode" SelectedIndex="0">
                                 <ComboBoxItem Content="No Cutout"/>
                                 <ComboBoxItem Content="And"/>
                                 <ComboBoxItem Content="Or"/>
                             </ComboBox>
-                    </StackPanel>
-                </Expander>
-                <Expander Header="Transparency Cutout">
-                    <StackPanel>
+                        </StackPanel>
+                    </Expander>
+                    <Expander Header="Transparency Cutout">
+                        <StackPanel>
                             <CheckBox x:Name="TransparencyCutout">
                                 <TextBlock Text="Enable Transparency Cutout"/>
                             </CheckBox>
-                        <TextBlock Text="R"/>
-                            <Slider x:Name="R1" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
-                        <TextBlock Text="G"/>
-                            <Slider x:Name="G1" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
-                        <TextBlock Text="B"/>
-                            <Slider x:Name="B1" Minimum="0" Value="255" Maximum="255" SmallChange="1" LargeChange="100"/>
+                            <TextBlock Text="R"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="R1" Minimum="0" Value="{Binding Text, ElementName=R1Box, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="255" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="R1Box" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="G"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="G1" Minimum="0" Value="{Binding Text, ElementName=G1Box, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="255" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="G1Box" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="B"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="B1" Minimum="0" Value="{Binding Text, ElementName=B1Box, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="255" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="B1Box" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
                             <ComboBox Name="CutoutModeTC" SelectedIndex="0">
                                 <ComboBoxItem Content="And"/>
                                 <ComboBoxItem Content="Or"/>
                             </ComboBox>
-                    </StackPanel>
-                </Expander>
-                    <Expander Header="More Options">
-                        <CheckBox x:Name="IsUseDownsize" Content="Use Downsized Image for faster preview"></CheckBox>
+                        </StackPanel>
                     </Expander>
-            </StackPanel>
+                    <Expander Header="More Options">
+                        <CheckBox IsChecked="True" x:Name="IsUseDownsize" Content="Use Downsized Image for faster preview"></CheckBox>
+                    </Expander>
+                </StackPanel>
             </ScrollViewer>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Content="View" Click="Button_Click"/>

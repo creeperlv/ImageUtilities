@@ -118,14 +118,14 @@ namespace ImageUtilities
                 {
                     if (c.R <= R1Value && c.G <= G1Value && c.B <= B1Value)
                     {
-                        return Color.FromArgb(c.R, c.G, c.B, 0);
+                        return Color.FromArgb(0,c.R, c.G, c.B);
                     }
                 }
                 else
                 if (CutoutMode2 == 1)
                     if (c.R <= R1Value || c.G <= G1Value || c.B <= B1Value)
                     {
-                        return Color.FromArgb(c.R, c.G, c.B, 0);
+                        return Color.FromArgb(0,c.R, c.G, c.B);
                     }
             }
             if (isMixColor)
