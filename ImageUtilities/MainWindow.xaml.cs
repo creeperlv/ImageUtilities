@@ -30,10 +30,17 @@ namespace ImageUtilities
             InitializeComponent();
             CurrentWindow = this;
         }
-
+        public void LockMainArea()
+        {
+            MainArea.IsEnabled = false;
+        }
+        public void UnlockMainArea()
+        {
+            MainArea.IsEnabled = true;
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
                 try
@@ -60,7 +67,7 @@ namespace ImageUtilities
                     if (VariablePool.CurrentBitmap.Width > 512 && VariablePool.CurrentBitmap.Height > 512)
                         VariablePool.CurrentBitmap_DownSized = Utilities.DownSize5X(VariablePool.CurrentBitmap);
                     else VariablePool.CurrentBitmap_DownSized = new Bitmap(VariablePool.OriginalImage);
-                    VariablePool.CurrentBitmap_Original = new Bitmap(VariablePool.OriginalImage);
+                    //VariablePool.CurrentBitmap_Original = new Bitmap(VariablePool.OriginalImage);
                     VariablePool.CurrentFile = openFileDialog.FileName;
                     VariablePool.OriginalImage.Dispose();
                     UpdatePreview();
@@ -119,8 +126,9 @@ namespace ImageUtilities
         {
             if (VariablePool.CurrentBitmap is null) {
                 ShowDialog("Error", "There's nothing to save.");
-                return; }
-            VariablePool.CurrentBitmap.Save(VariablePool.CurrentFile, ImageFormat.Png);
+                return;
+            }
+            SaveFile(VariablePool.CurrentFile);
             ShowDialog("Done","Image have been saved to:"+VariablePool.CurrentFile);
         }
 
@@ -131,16 +139,33 @@ namespace ImageUtilities
                 ShowDialog("Error", "There's nothing to save.");
                 return;
             }
-            Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
+            SaveFileDialog sfd = new SaveFileDialog();
             sfd.FileName = VariablePool.CurrentFile;
             if (sfd.ShowDialog() == true)
             {
                 if (!File.Exists(sfd.FileName))
                     File.Create(sfd.FileName).Close();
-                VariablePool.CurrentBitmap.Save(sfd.FileName, ImageFormat.Png);
+                SaveFile(sfd.FileName);
                 VariablePool.CurrentFile = sfd.FileName;
                 ShowDialog("Done", "Image have been saved to:" + VariablePool.CurrentFile);
             }
+        }
+        public void SaveFile(string FileName)
+        {
+            ImageFormat TargetFormat = ImageFormat.Png;
+            FileInfo fi = new FileInfo(FileName);
+            if (fi.Extension.ToUpper() == ".PNG")
+                TargetFormat = ImageFormat.Png;
+            else
+            if (fi.Extension.ToUpper() == ".BMG")
+                TargetFormat = ImageFormat.Bmp;
+            else
+            if (fi.Extension.ToUpper() == ".JPG" || fi.Extension.ToUpper() == ".JPEG")
+                TargetFormat = ImageFormat.Jpeg;
+            else
+            if (fi.Extension.ToUpper() == ".ICO" || fi.Extension.ToUpper() == ".ICON")
+                TargetFormat = ImageFormat.Icon;
+            VariablePool.CurrentBitmap.Save(FileName, TargetFormat);
         }
         public void ShowDialog(string Title,string Message)
         {

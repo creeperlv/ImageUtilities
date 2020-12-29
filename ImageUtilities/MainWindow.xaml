@@ -20,14 +20,27 @@
                 </Rectangle.Fill>
 
             </Rectangle>
-            <ScrollViewer Background="White">
+            <ScrollViewer Background="White" VerticalScrollBarVisibility="Auto" MinWidth="150">
                 <StackPanel>
-                    <Button Click="Button_Click">Open File</Button>
-                    <Button Click="Button_Click_3">Save File</Button>
-                    <Button Click="Button_Click_4">Save As...</Button>
-                    <TextBlock Text="Tools"/>
-                    <Button Click="Button_Click_1">Transparency</Button>
-                    <Button Click="Button_Click_2">Grayscale</Button>
+                    <Expander IsExpanded="True">
+                        <Expander.Header>
+                            <TextBlock Text="FILE" FontSize="16" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel>
+                            <Button Click="Button_Click" HorizontalContentAlignment="Left">Open</Button>
+                            <Button Click="Button_Click_3" HorizontalContentAlignment="Left">Save</Button>
+                            <Button Click="Button_Click_4" HorizontalContentAlignment="Left">Save As...</Button>
+                        </StackPanel>
+                    </Expander>
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock Text="TOOLS" FontSize="16" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel>
+                            <Button Click="Button_Click_1" HorizontalContentAlignment="Left">Transparency</Button>
+                            <Button Click="Button_Click_2" HorizontalContentAlignment="Left">Grayscale</Button>
+                        </StackPanel>
+                    </Expander>
                 </StackPanel>
             </ScrollViewer>
             <Grid Grid.Column="1">

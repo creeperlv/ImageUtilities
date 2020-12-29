@@ -58,7 +58,7 @@ namespace ImageUtilities
                 Operating = VariablePool.CurrentBitmap;
             }
             Current = new Bitmap(Operating.Width, Operating.Height);
-            FunctionArea.IsEnabled = false;
+            MainWindow.CurrentWindow.LockMainArea();
             ProcessImage(Operating, Current);
 
         }
@@ -98,7 +98,7 @@ namespace ImageUtilities
                 Dispatcher.Invoke(() =>
                 {
                     UpdateView(OutputBitmap);
-                    FunctionArea.IsEnabled = true;
+                    MainWindow.CurrentWindow.UnlockMainArea();
                     if (action is not null) action();
                 });
                 GC.Collect();
@@ -175,7 +175,7 @@ namespace ImageUtilities
         {
             Bitmap Operating = VariablePool.CurrentBitmap;
             Current = new Bitmap(Operating.Width, Operating.Height);
-            FunctionArea.IsEnabled = false;
+            MainWindow.CurrentWindow.LockMainArea();
             ProcessImage(Operating, VariablePool.CurrentBitmap, () =>
             {
                 MainWindow.CurrentWindow.UpdatePreview();
