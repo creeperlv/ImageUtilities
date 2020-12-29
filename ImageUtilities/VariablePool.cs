@@ -16,6 +16,7 @@ namespace ImageUtilities
         public static Bitmap CurrentBitmap;
         public static Bitmap CurrentBitmap_DownSized;
         public static Bitmap CurrentBitmap_Original;
+        public static string CurrentFile;
         public static Image OriginalImage;
     }
     static class Utilities

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,11 +61,14 @@ namespace ImageUtilities
                         VariablePool.CurrentBitmap_DownSized = Utilities.DownSize5X(VariablePool.CurrentBitmap);
                     else VariablePool.CurrentBitmap_DownSized = new Bitmap(VariablePool.OriginalImage);
                     VariablePool.CurrentBitmap_Original = new Bitmap(VariablePool.OriginalImage);
+                    VariablePool.CurrentFile = openFileDialog.FileName;
+                    VariablePool.OriginalImage.Dispose();
                     UpdatePreview();
                     GC.Collect();
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
+                    ShowDialog("Error", "Cannot open file:" + exception);
                 }
             }
         }
@@ -80,7 +86,7 @@ namespace ImageUtilities
                 VariablePool.CurrentBitmap_DownSized = Utilities.DownSize10X(VariablePool.CurrentBitmap);
             else if (VariablePool.CurrentBitmap.Width > 512 && VariablePool.CurrentBitmap.Height > 512)
                 VariablePool.CurrentBitmap_DownSized = Utilities.DownSize5X(VariablePool.CurrentBitmap);
-            else VariablePool.CurrentBitmap_DownSized = VariablePool.CurrentBitmap.Clone(new System.Drawing.Rectangle(0,0,VariablePool.CurrentBitmap.Width, VariablePool.CurrentBitmap.Height), VariablePool.CurrentBitmap.PixelFormat);
+            else VariablePool.CurrentBitmap_DownSized = VariablePool.CurrentBitmap.Clone(new System.Drawing.Rectangle(0, 0, VariablePool.CurrentBitmap.Width, VariablePool.CurrentBitmap.Height), VariablePool.CurrentBitmap.PixelFormat);
         }
         public void UpdatePreview()
         {
@@ -107,6 +113,47 @@ namespace ImageUtilities
             var x = (e.NewSize.Width / 100.0);
             var y = (e.NewSize.Height / 100.0);
             BG.Viewport = new Rect(0, 0, (1.0 / x), (1.0 / y));
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            if (VariablePool.CurrentBitmap is null) {
+                ShowDialog("Error", "There's nothing to save.");
+                return; }
+            VariablePool.CurrentBitmap.Save(VariablePool.CurrentFile, ImageFormat.Png);
+            ShowDialog("Done","Image have been saved to:"+VariablePool.CurrentFile);
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            if (VariablePool.CurrentBitmap is null)
+            {
+                ShowDialog("Error", "There's nothing to save.");
+                return;
+            }
+            Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
+            sfd.FileName = VariablePool.CurrentFile;
+            if (sfd.ShowDialog() == true)
+            {
+                if (!File.Exists(sfd.FileName))
+                    File.Create(sfd.FileName).Close();
+                VariablePool.CurrentBitmap.Save(sfd.FileName, ImageFormat.Png);
+                VariablePool.CurrentFile = sfd.FileName;
+                ShowDialog("Done", "Image have been saved to:" + VariablePool.CurrentFile);
+            }
+        }
+        public void ShowDialog(string Title,string Message)
+        {
+            DialogTitle.Text = Title;
+            DialogContent.Text = Message;
+            MainArea.IsEnabled = false;
+            DialogLayer.Visibility = Visibility.Visible;
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            MainArea.IsEnabled = true;
+            DialogLayer.Visibility = Visibility.Collapsed;
         }
     }
 }
