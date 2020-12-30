@@ -28,27 +28,25 @@ namespace CLUNL.Imaging
         bool isReserveTransparency = true;
         public Color Process(Color c)
         {
-
+            float GrayIntensity = 0.0f;
+            if (isMixColor)
             {
-                float GrayIntensity = 0.0f;
-                if (isMixColor)
-                {
-                    float total = c.R * RIntensity + c.G * GIntensity + c.B * BIntensity + c.A * AIntensity;
-                    float rate = total / (byte.MaxValue * (isRGBAIntensity == true ? RGBAIntensity : 1f));
-                    GrayIntensity = rate;
+                float total = c.R * RIntensity + c.G * GIntensity + c.B * BIntensity + c.A * AIntensity;
+                float rate = total / (byte.MaxValue * (isRGBAIntensity == true ? RGBAIntensity : 1f));
+                GrayIntensity = rate;
 
-                }
-                else
-                {
-                    float total = c.R + c.G + c.B;
-                    float rate = total / (byte.MaxValue * (isRGBAIntensity == true ? 3 : 1f));
-                    GrayIntensity = rate;
-                }
-                var G = (byte)Math.Min((byte.MaxValue * GrayIntensity), byte.MaxValue);
-                if (isBlackAsFullTranparent == true) if (c.A == 0) G = 0;
-                Color Result = Color.FromArgb(isReserveTransparency == false ? 255 : c.A, G, G, G);
-                return Result;
             }
+            else
+            {
+                float total = c.R + c.G + c.B;
+                float rate = total / (byte.MaxValue * (isRGBAIntensity == true ? 3 : 1f));
+                GrayIntensity = rate;
+            }
+            var G = (byte)Math.Min((byte.MaxValue * GrayIntensity), byte.MaxValue);
+            if (isBlackAsFullTranparent == true) if (c.A == 0) G = 0;
+            Color Result = Color.FromArgb(isReserveTransparency == false ? 255 : c.A, G, G, G);
+            return Result;
+
         }
 
         float GetIntensity(double value) => (float)value / 255f;

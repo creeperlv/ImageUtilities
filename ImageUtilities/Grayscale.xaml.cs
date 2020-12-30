@@ -67,11 +67,6 @@ namespace ImageUtilities
             Preview.Source = ImgSrc;
 
         }
-        float RIntensity = 1;
-        float GIntensity = 1;
-        float BIntensity = 1;
-        float AIntensity = 1;
-        float RGBAIntensity = 4;
         float RValue = 255;
         float GValue = 255;
         float BValue = 255;
@@ -86,11 +81,6 @@ namespace ImageUtilities
             GValue = (float)G.Value;
             BValue = (float)B.Value;
             AValue = (float)Alpha.Value;
-            RIntensity = GetIntensity(RValue);
-            GIntensity = GetIntensity(GValue);
-            BIntensity = GetIntensity(BValue);
-            AIntensity = GetIntensity(AValue);
-            RGBAIntensity = RIntensity + BIntensity + GIntensity + AIntensity;
             isMixColor = MixColorGrayscale.IsChecked.Value;
             isReserveTransparency = ReserveTransparency.IsChecked.Value;
             isRGBAIntensity = UseRGBAIntensity.IsChecked.Value;
@@ -98,20 +88,20 @@ namespace ImageUtilities
 
             ProcessorArguments arguments = new ProcessorArguments(RValue, GValue, BValue, AValue, isMixColor, isRGBAIntensity, isBlackAsFullTranparent, isReserveTransparency);
 
-            float GetIntensity(double value) => (float)value / 255f;
 
             Task.Run(() =>
             {
-            GrayscaleProcessor.CurrentGrayscaleProcessor.ProcessImage(Processing, OutputBitmap, arguments,
-                ()=> {
-                    Dispatcher.Invoke(() =>
+                GrayscaleProcessor.CurrentGrayscaleProcessor.ProcessImage(Processing, OutputBitmap, arguments,
+                    () =>
                     {
-                        UpdateView(OutputBitmap);
-                        MainWindow.CurrentWindow.UnlockMainArea();
-                        if (action is not null) action();
+                        Dispatcher.Invoke(() =>
+                        {
+                            UpdateView(OutputBitmap);
+                            MainWindow.CurrentWindow.UnlockMainArea();
+                            if (action is not null) action();
+                        });
                     });
-                });
-               
+
                 GC.Collect();
             });
         }
