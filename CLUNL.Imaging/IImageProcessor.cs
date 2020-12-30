@@ -24,8 +24,8 @@ namespace CLUNL.Imaging
         }
         public ProcessorArguments(params object[] Arguments)
         {
-            FloatArguments = new List<float>();
-            Switches = new List<bool>();
+            FloatArguments = new ();
+            Switches = new ();
             foreach (var item in Arguments)
             {
                 if(item is float)

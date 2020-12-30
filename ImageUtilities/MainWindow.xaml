@@ -75,7 +75,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <TextBlock x:Name="DialogTitle" FontSize="18">Dialog Title</TextBlock>
-                        <TextBlock x:Name="DialogContent" Text="DialogContent" Grid.Row="1"/>
+                        <TextBlock x:Name="DialogContent" Text="DialogContent" Grid.Row="1" TextWrapping="Wrap"/>
                         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Padding="24,4" Click="Button_Click_5">OK</Button>
                         </StackPanel>
