@@ -53,8 +53,6 @@ namespace ImageUtilities
                             VariablePool.CurrentBitmap.Dispose();
                         if (VariablePool.CurrentBitmap_DownSized is not null)
                             VariablePool.CurrentBitmap_DownSized.Dispose();
-                        if (VariablePool.CurrentBitmap_Original is not null)
-                            VariablePool.CurrentBitmap_Original.Dispose();
                     }
                     catch (Exception)
                     {

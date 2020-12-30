@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CLUNL.Imaging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -89,57 +90,30 @@ namespace ImageUtilities
             GIntensity = GetIntensity(GValue);
             BIntensity = GetIntensity(BValue);
             AIntensity = GetIntensity(AValue);
-            isMixColor = MixColorGrayscale.IsChecked.Value;
             RGBAIntensity = RIntensity + BIntensity + GIntensity + AIntensity;
+            isMixColor = MixColorGrayscale.IsChecked.Value;
             isReserveTransparency = ReserveTransparency.IsChecked.Value;
             isRGBAIntensity = UseRGBAIntensity.IsChecked.Value;
             isBlackAsFullTranparent = UseBlackAsTransparency.IsChecked.Value;
+
+            ProcessorArguments arguments = new ProcessorArguments(RValue, GValue, BValue, AValue, isMixColor, isRGBAIntensity, isBlackAsFullTranparent, isReserveTransparency);
+
             float GetIntensity(double value) => (float)value / 255f;
 
             Task.Run(() =>
             {
-                int WB = Processing.Width;
-                int H = Processing.Height;
-                for (int w = 0; w < WB; w++)
-                {
-                    for (int h = 0; h < H; h++)
+            GrayscaleProcessor.CurrentGrayscaleProcessor.ProcessImage(Processing, OutputBitmap, arguments,
+                ()=> {
+                    Dispatcher.Invoke(() =>
                     {
-                        var c = Processing.GetPixel(w, h);
-                        OutputBitmap.SetPixel(w, h, Process(c));
-                    }
-                }
-                Dispatcher.Invoke(() =>
-                {
-                    UpdateView(OutputBitmap);
-                    MainWindow.CurrentWindow.UnlockMainArea();
-                    if (action is not null) action();
+                        UpdateView(OutputBitmap);
+                        MainWindow.CurrentWindow.UnlockMainArea();
+                        if (action is not null) action();
+                    });
                 });
+               
                 GC.Collect();
             });
-        }
-        public Color Process(Color c)
-        {
-
-            {
-                float GrayIntensity = 0.0f;
-                if (isMixColor)
-                {
-                    float total = c.R * RIntensity + c.G * GIntensity + c.B * BIntensity + c.A * AIntensity;
-                    float rate = total / (byte.MaxValue * (isRGBAIntensity==true? RGBAIntensity:1f));
-                    GrayIntensity = rate;
-
-                }
-                else
-                {
-                    float total = c.R + c.G + c.B;
-                    float rate = total / (byte.MaxValue * (isRGBAIntensity == true ? 3 : 1f));
-                    GrayIntensity = rate;
-                }
-                var G = (byte)Math.Min((byte.MaxValue * GrayIntensity), byte.MaxValue);
-                if (isBlackAsFullTranparent == true) if (c.A == 0) G = 0;
-                Color Result = Color.FromArgb(isReserveTransparency == false ? 255 : c.A, G, G, G);
-                return Result;
-            }
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)

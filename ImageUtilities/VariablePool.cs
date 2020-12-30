@@ -15,7 +15,7 @@ namespace ImageUtilities
     {
         public static Bitmap CurrentBitmap;
         public static Bitmap CurrentBitmap_DownSized;
-        public static Bitmap CurrentBitmap_Original;
+        //public static Bitmap CurrentBitmap_Original;
         public static string CurrentFile;
         public static Image OriginalImage;
     }
@@ -68,7 +68,7 @@ namespace ImageUtilities
 
             var scaleWidth = (int)(Original.Width /5);
             var scaleHeight = (int)(Original.Height /5);
-
+            
             graph.FillRectangle(brush, new RectangleF(0, 0, width, height));
             graph.DrawImage(Original, ((int)width - scaleWidth) / 2, ((int)height - scaleHeight) / 2, scaleWidth, scaleHeight);
             return bmp;

@@ -123,7 +123,7 @@ namespace ImageUtilities
             PreviewImage.Source = ImgSrc;
 
         }
-        public System.Drawing.Color Process(Color c)
+        public Color Process(Color c)
         {
             byte R = c.R;
             byte G = c.G;

@@ -18,4 +18,12 @@
     <Resource Include="TileBackground.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ReliefUI\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CLUNL.Imaging\CLUNL.Imaging.csproj" />
+  </ItemGroup>
+
 </Project>
