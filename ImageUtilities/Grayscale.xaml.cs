@@ -77,6 +77,7 @@ namespace ImageUtilities
         float AValue = 255;
         bool isMixColor = false;
         bool isRGBAIntensity = false;
+        bool isBlackAsFullTranparent = false;
         bool isReserveTransparency = false;
         public void ProcessImage(Bitmap Processing, Bitmap OutputBitmap, Action action = null)
         {
@@ -92,6 +93,7 @@ namespace ImageUtilities
             RGBAIntensity = RIntensity + BIntensity + GIntensity + AIntensity;
             isReserveTransparency = ReserveTransparency.IsChecked.Value;
             isRGBAIntensity = UseRGBAIntensity.IsChecked.Value;
+            isBlackAsFullTranparent = UseBlackAsTransparency.IsChecked.Value;
             float GetIntensity(double value) => (float)value / 255f;
 
             Task.Run(() =>
@@ -134,6 +136,7 @@ namespace ImageUtilities
                     GrayIntensity = rate;
                 }
                 var G = (byte)Math.Min((byte.MaxValue * GrayIntensity), byte.MaxValue);
+                if (isBlackAsFullTranparent == true) if (c.A == 0) G = 0;
                 Color Result = Color.FromArgb(isReserveTransparency == false ? 255 : c.A, G, G, G);
                 return Result;
             }

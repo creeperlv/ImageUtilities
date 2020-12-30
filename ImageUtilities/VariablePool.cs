@@ -52,7 +52,8 @@ namespace ImageUtilities
             graph.FillRectangle(brush, new RectangleF(0, 0, width, height));
             graph.DrawImage(Original, ((int)width - scaleWidth) / 2, ((int)height - scaleHeight) / 2, scaleWidth, scaleHeight);
             return bmp;
-        }public static Bitmap DownSize5X(Bitmap Original)
+        }
+        public static Bitmap DownSize5X(Bitmap Original)
         {
             int width = Original.Width / 5;
             int height = Original.Height/ 5;

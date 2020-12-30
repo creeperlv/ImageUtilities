@@ -180,5 +180,12 @@ namespace ImageUtilities
             MainArea.IsEnabled = true;
             DialogLayer.Visibility = Visibility.Collapsed;
         }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            CentralFrame.Children.Clear();
+            CentralFrame.Children.Add(new ColorAdjustment());
+            GC.Collect();
+        }
     }
 }

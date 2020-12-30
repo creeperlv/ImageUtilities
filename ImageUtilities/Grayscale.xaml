@@ -13,17 +13,18 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Preview"/>
+        <TextBlock Text="PREVIEW" FontWeight="Bold"/>
         <Image x:Name="Preview" Grid.Row="1"/>
         <StackPanel Grid.Row="2" Background="White" Name="FunctionArea">
             <ScrollViewer MaxHeight="300px">
                 <StackPanel>
-                    <TextBlock Text="Parameters" FontSize="18"/>
+                    <TextBlock Text="Grayscale" FontSize="18"/>
                     <Expander Header="Mix Color Transparency Intensity">
                         <StackPanel>
                             <CheckBox IsChecked="true" Name="MixColorGrayscale" Content="Enable Mix Color Grayscale"></CheckBox>
                             <CheckBox IsChecked="true" Name="ReserveTransparency" Content="Reserve Transparency"></CheckBox>
                             <CheckBox IsChecked="true" Name="UseRGBAIntensity" Content="RGBA Mix Intensity"></CheckBox>
+                            <CheckBox IsChecked="true" Name="UseBlackAsTransparency" Content="Treat Transparency As RGB=000000"></CheckBox>
                             <TextBlock Text="R"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>

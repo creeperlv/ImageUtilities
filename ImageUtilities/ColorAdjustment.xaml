@@ -1,0 +1,108 @@
+﻿<UserControl x:Class="ImageUtilities.ColorAdjustment"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ImageUtilities"
+             mc:Ignorable="d"  Unloaded="UserControl_Unloaded"
+             d:DesignHeight="600" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="PREVIEW" FontWeight="Bold"/>
+        <Image  Grid.Row="1" Name="PreviewImage"/>
+        <StackPanel Grid.Row="2" Background="White">
+            <ScrollViewer MaxHeight="250">
+                <StackPanel>
+                    <TextBlock Text="Color Adjustments" FontSize="18"/>
+                    <Expander Header="Brightness">
+                        <StackPanel  Margin="5,0">
+                            <CheckBox x:Name="AdjustBrightness" Content="Adjust Brightness"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="Brightness" Value="{Binding Text, ElementName=BrightnessBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Minimum="-255" Maximum="255" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="BrightnessBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="0"/>
+                            </Grid>
+                            <CheckBox x:Name="ScaleBrightness" Content="Scale Brightness"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="Contrast" Value="{Binding Text, ElementName=ContrastBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Minimum="0" Maximum="10" SmallChange="0.1" LargeChange="1"/>
+                                <TextBox x:Name="ContrastBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="1"/>
+                            </Grid>
+                        </StackPanel>
+                    </Expander>
+                    <Expander Header="Color Blend">
+                        <StackPanel Margin="5,0">
+                            <CheckBox x:Name="ColorBlend" Content="Enable Color Blend"/>
+                            <CheckBox x:Name="IgnoreTransparency" Content="Ignore Transparency"/>
+                            <TextBlock Text="R"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="CB_R" Minimum="0" Value="{Binding Text, ElementName=CB_textBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="510" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="CB_textBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="G"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="CB_G" Minimum="0" Value="{Binding Text, ElementName=CB_textBoxG, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="510" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="CB_textBoxG" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="B"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="CB_B" Minimum="0" Value="{Binding Text, ElementName=CB_textBoxB, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="510" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="CB_textBoxB" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+                            <TextBlock Text="Alpha"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="CB_Alpha" Minimum="0" Value="{Binding Text, ElementName=CB_AlphaBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="510" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="CB_AlphaBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="255"/>
+                            </Grid>
+
+                            <TextBlock Text="Color Blend Mode"/>
+                            <ComboBox Name="ColorBlendModeSelector" SelectedIndex="0">
+                                <ComboBoxItem Content="Add"/>
+                                <ComboBoxItem Content="Multiply"/>
+                                <ComboBoxItem Content="Subtract"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Header="More Options">
+                        <StackPanel Margin="5,0">
+                            <CheckBox x:Name="InventColor" Content="Invent Color"/>
+                            <CheckBox IsChecked="True" x:Name="IsUseDownsize" Content="Use Downsized Image for faster preview"></CheckBox>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="View" Click="Button_Click"/>
+                <Button Content="Apply" Click="Button_Click_1"/>
+                <Button Content="Cancel"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

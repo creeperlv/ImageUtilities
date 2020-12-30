@@ -37,8 +37,9 @@
                             <TextBlock Text="TOOLS" FontSize="16" FontWeight="Bold"/>
                         </Expander.Header>
                         <StackPanel>
-                            <Button Click="Button_Click_1" HorizontalContentAlignment="Left">Transparency</Button>
+                            <Button Click="Button_Click_6" HorizontalContentAlignment="Left">Color Adjustment</Button>
                             <Button Click="Button_Click_2" HorizontalContentAlignment="Left">Grayscale</Button>
+                            <Button Click="Button_Click_1" HorizontalContentAlignment="Left">Transparency</Button>
                         </StackPanel>
                     </Expander>
                 </StackPanel>
