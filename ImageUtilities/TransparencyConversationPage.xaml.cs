@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CLUNL.Imaging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -24,11 +25,6 @@ namespace ImageUtilities
         {
             InitializeComponent();
         }
-        float RIntensity = 1;
-        float GIntensity = 1;
-        float BIntensity = 1;
-        float AIntensity = 1;
-        float RGBIntensity = 3;
         float RValue = 255;
         float GValue = 255;
         float BValue = 255;
@@ -71,37 +67,24 @@ namespace ImageUtilities
             G1Value = (float)G1.Value;
             B1Value = (float)B1.Value;
             AValue = (float)Alpha.Value;
-            RIntensity = GetIntensity(RValue);
-            GIntensity = GetIntensity(GValue);
-            BIntensity = GetIntensity(BValue);
-            AIntensity = GetIntensity(AValue);
             isTransparencyCutout = TransparencyCutout.IsChecked.Value;
             isMixColor = MixColorTransparency.IsChecked.Value;
             CutoutMode1 = CutoutMode.SelectedIndex;
             CutoutMode2 = CutoutModeTC.SelectedIndex;
-            RGBIntensity = RIntensity + BIntensity + GIntensity;
-
-            float GetIntensity(double value) => (float)value / 255f;
-
+            ProcessorArguments arguments = new ProcessorArguments(RValue, GValue, BValue, AValue, R1Value, G1Value, B1Value, (float)CutoutMode1, (float)CutoutMode2, isMixColor, isTransparencyCutout);
             Task.Run(() =>
             {
-                int WB = Processing.Width;
-                int H = Processing.Height;
-                for (int w = 0; w < WB; w++)
-                {
-                    for (int h = 0; h < H; h++)
+                TransparencyProcessor.CurrentTransparencyProcessor.ProcessImage(Processing, OutputBitmap, arguments, () => {
+
+                    Dispatcher.Invoke(() =>
                     {
-                        var c = Processing.GetPixel(w, h);
-                        OutputBitmap.SetPixel(w, h, Process(c));
-                    }
-                }
-                Dispatcher.Invoke(() =>
-                {
-                    UpdateView(OutputBitmap);
-                    MainWindow.CurrentWindow.UnlockMainArea();
-                    if (action is not null) action();
+                        UpdateView(OutputBitmap);
+                        MainWindow.CurrentWindow.UnlockMainArea();
+                        if (action is not null) action();
+                    });
+                    GC.Collect();
                 });
-                GC.Collect();
+                
             });
         }
         public void UpdateView(Bitmap Current)
@@ -109,55 +92,6 @@ namespace ImageUtilities
             var ImgSrc = Utilities.ImageSourceFromBitmap(Current);
             Preview.Source = ImgSrc;
 
-        }
-        public Color Process(Color c)
-        {
-            if (isTransparencyCutout)
-            {
-                if (CutoutMode2 == 0)
-                {
-                    if (c.R <= R1Value && c.G <= G1Value && c.B <= B1Value)
-                    {
-                        return Color.FromArgb(0,c.R, c.G, c.B);
-                    }
-                }
-                else
-                if (CutoutMode2 == 1)
-                    if (c.R <= R1Value || c.G <= G1Value || c.B <= B1Value)
-                    {
-                        return Color.FromArgb(0,c.R, c.G, c.B);
-                    }
-            }
-            if (isMixColor)
-            {
-
-                float AlphaIntensity = 0.0f;
-                {
-                    float total = c.R * RIntensity + c.G * GIntensity + c.B * BIntensity;
-                    float rate = total / (255f * RGBIntensity);
-                    float rate2 = rate * AIntensity;
-                    //AlphaIntensity = 1-rate2;
-                    AlphaIntensity = rate2;
-                    if (CutoutMode1 == 1)
-                        if (c.R >= RValue && c.G >= GValue && c.B >= BValue)
-                        {
-                            rate2 = ((float)c.A) / 255f;
-                            AlphaIntensity = rate2;
-                        }
-                    if (CutoutMode1 == 2)
-                        if (c.R >= RValue || c.G >= GValue || c.B >= BValue)
-                        {
-                            rate2 = ((float)c.A) / 255f;
-                            //rate2 = AIntensity;
-                            AlphaIntensity = rate2;
-                        }
-
-                }
-                var A = (byte)Math.Min((Byte.MaxValue * AlphaIntensity), Byte.MaxValue);
-                Color Result = Color.FromArgb(A, c.R, c.G, c.B);
-                return Result;
-            }
-            return c;
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)

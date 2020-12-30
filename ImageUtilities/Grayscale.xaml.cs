@@ -45,7 +45,7 @@ namespace ImageUtilities
             {
                 Operating = VariablePool.CurrentBitmap;
             }
-            Current = new (Operating.Width, Operating.Height);
+            Current = new(Operating.Width, Operating.Height);
             MainWindow.CurrentWindow.LockMainArea();
             ProcessImage(Operating, Current);
         }
@@ -53,7 +53,7 @@ namespace ImageUtilities
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Bitmap Operating = VariablePool.CurrentBitmap;
-            Current = new (Operating.Width, Operating.Height);
+            Current = new(Operating.Width, Operating.Height);
             MainWindow.CurrentWindow.LockMainArea();
             ProcessImage(Operating, VariablePool.CurrentBitmap, () =>
             {
@@ -100,9 +100,9 @@ namespace ImageUtilities
                             MainWindow.CurrentWindow.UnlockMainArea();
                             if (action is not null) action();
                         });
+                        GC.Collect();
                     });
 
-                GC.Collect();
             });
         }
 

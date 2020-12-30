@@ -54,19 +54,13 @@ namespace CLUNL.Imaging
         {
             if (arguments is not null)
             {
-                RValue = arguments.FloatArguments[0];
-                GValue = arguments.FloatArguments[1];
-                BValue = arguments.FloatArguments[2];
-                AValue = arguments.FloatArguments[3];
+                arguments.ApplyFloats(ref RValue, ref GValue,ref BValue, ref AValue);
+                arguments.ApplyBools(ref isMixColor, ref isRGBAIntensity, ref isRGBAIntensity, ref isReserveTransparency);
                 RIntensity = GetIntensity(RValue);
                 GIntensity = GetIntensity(GValue);
                 BIntensity = GetIntensity(BValue);
                 AIntensity = GetIntensity(AValue);
                 RGBAIntensity = RIntensity + BIntensity + GIntensity + AIntensity;
-                isMixColor = arguments.Switches[0];
-                isRGBAIntensity = arguments.Switches[1];
-                isBlackAsFullTranparent = arguments.Switches[2];
-                isReserveTransparency = arguments.Switches[3];
             }
             int WB = Processing.Width;
             int H = Processing.Height;
