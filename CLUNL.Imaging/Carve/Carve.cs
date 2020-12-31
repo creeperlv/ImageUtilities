@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CLUNL.Imaging.Carve
 {
+    [Serializable]
     public class Carve
     {
         static Carve()
@@ -34,6 +35,7 @@ namespace CLUNL.Imaging.Carve
             return bitmap;
         }
     }
+    [Serializable]
     public class CarveElement
     {
         public float Height;
@@ -44,6 +46,20 @@ namespace CLUNL.Imaging.Carve
             return Carve.Empty;
         }
     }
+    [Serializable]
+    public class CarveLine: CarveElement
+    {
+        public LineNode Start;
+
+    }
+    [Serializable]
+    public class LineNode
+    {
+        public float PositionX;
+        public float PositionY;
+        public LineNode NextNode;
+    }
+    [Serializable]
     public class CarveText : CarveElement
     {
         public Font Font;

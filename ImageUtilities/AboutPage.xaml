@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="ImageUtilities.AboutPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ImageUtilities" Loaded="UserControl_Loaded"
+             mc:Ignorable="d" Background="White" TextElement.FontSize="15"
+             d:DesignHeight="450" d:DesignWidth="300">
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <TextBlock Text="ABOUT" FontWeight="Bold" FontSize="18"/>
+                <TextBlock Text="Image Utilities" FontSize="28" FontWeight="Light"/>
+                <TextBlock Text="Created by Creeper Lv"/>
+                <TextBlock x:Name="VersionBlock" Text="Version:"/>
+                <TextBlock/>
+                <TextBlock Text="This software is licensed under the MIT License." TextWrapping="Wrap"/>
+                <TextBlock/>
+                <TextBlock Text="This software is a software that is not completed yet and is not suitable for production environment!" FontWeight="Bold" TextWrapping="Wrap"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -178,11 +178,28 @@ namespace ImageUtilities
             MainArea.IsEnabled = true;
             DialogLayer.Visibility = Visibility.Collapsed;
         }
-
+        public void ToBlankPage()
+        {
+            CentralFrame.Children.Clear();
+            CentralFrame.Children.Add(new BlankPage());
+            GC.Collect();
+        }
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
             CentralFrame.Children.Clear();
             CentralFrame.Children.Add(new ColorAdjustment());
+            GC.Collect();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ToBlankPage();
+        }
+
+        private void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+            CentralFrame.Children.Clear();
+            CentralFrame.Children.Add(new AboutPage());
             GC.Collect();
         }
     }

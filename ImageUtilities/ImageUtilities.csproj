@@ -4,9 +4,22 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <Authors>Creeper Lv</Authors>
+    <Company />
+    <Product>Image Utilities</Product>
+    <Copyright>Copyright (C) 2020 Creeper Lv</Copyright>
+    <AssemblyVersion>0.1.1.0</AssemblyVersion>
+    <FileVersion>0.1.1.0</FileVersion>
+    <ApplicationIcon>ImageUtilities_Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ImageUtilities_Icon.png" />
     <None Remove="TileBackground.png" />
   </ItemGroup>
 
@@ -15,11 +28,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="ImageUtilities_Icon.png" />
     <Resource Include="TileBackground.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ReliefUI\" />
+    <Folder Include="CarvefUI\" />
   </ItemGroup>
 
   <ItemGroup>

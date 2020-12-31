@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,13 +17,18 @@ using System.Windows.Shapes;
 namespace ImageUtilities
 {
     /// <summary>
-    /// Interaction logic for ReliefGenerator.xaml
+    /// Interaction logic for AboutPage.xaml
     /// </summary>
-    public partial class ReliefGenerator : UserControl
+    public partial class AboutPage : UserControl
     {
-        public ReliefGenerator()
+        public AboutPage()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            VersionBlock.Text += Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
     }
 }

@@ -14,7 +14,7 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Preview"/>
+        <TextBlock Text="PREVIEW" FontWeight="Bold"/>
         <Image x:Name="Preview" Grid.Row="1"/>
         <StackPanel Grid.Row="2" Background="White" Name="FunctionArea">
             <ScrollViewer MaxHeight="300px">

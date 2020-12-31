@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageUtilities"
-        mc:Ignorable="d"
+        mc:Ignorable="d" Loaded="Window_Loaded"
         Title="Image Utilities" Height="600" Width="800">
     <Grid>
 
@@ -37,9 +37,19 @@
                             <TextBlock Text="TOOLS" FontSize="16" FontWeight="Bold"/>
                         </Expander.Header>
                         <StackPanel>
+                            <Button Visibility="Collapsed" HorizontalContentAlignment="Left">Carve Generator</Button>
                             <Button Click="Button_Click_6" HorizontalContentAlignment="Left">Color Adjustment</Button>
                             <Button Click="Button_Click_2" HorizontalContentAlignment="Left">Grayscale</Button>
                             <Button Click="Button_Click_1" HorizontalContentAlignment="Left">Transparency</Button>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock Text="HELP" FontSize="16" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel>
+                            <Button  HorizontalContentAlignment="Left" Click="Button_Click_7">About</Button>
                         </StackPanel>
                     </Expander>
                 </StackPanel>

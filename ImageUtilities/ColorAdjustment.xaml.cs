@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CLUNL.Imaging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -66,11 +67,7 @@ namespace ImageUtilities
         float CB_AValue = 255;
         float BrightIntensity = 1;
         float CIntensity = 1;
-        float RIntensity = 1;
-        float GIntensity = 1;
-        float BIntensity = 1;
-        float AIntensity = 1;
-        int ColorBlendMode;
+        int ColorBlendMode=0;
         bool isInventColor = false;
         bool WillAdjustBrightness = false;
         bool WillScaleBrightness = false;
@@ -84,37 +81,26 @@ namespace ImageUtilities
             CB_AValue = (float)CB_Alpha.Value;
             BrightIntensity = (float)Brightness.Value;
             CIntensity = (float)Contrast.Value;
-            RIntensity = GetIntensity(CB_RValue);
-            GIntensity = GetIntensity(CB_GValue);
-            BIntensity = GetIntensity(CB_BValue);
-            AIntensity = GetIntensity(CB_AValue);
             ColorBlendMode = ColorBlendModeSelector.SelectedIndex;
             isInventColor = InventColor.IsChecked.Value;
             WillAdjustBrightness = AdjustBrightness.IsChecked.Value;
             WillScaleBrightness = ScaleBrightness.IsChecked.Value;
             WillPerformColorBlend = ColorBlend.IsChecked.Value;
             WillPerformColorBlend_IgnoreTransparency = IgnoreTransparency.IsChecked.Value;
-            float GetIntensity(double value) => (float)value / 255f;
 
+            ProcessorArguments arguments = new(CB_RValue, CB_GValue, CB_BValue, CB_AValue, BrightIntensity, CIntensity, ColorBlendMode, isInventColor, WillAdjustBrightness, WillScaleBrightness, WillPerformColorBlend, WillPerformColorBlend_IgnoreTransparency);
+            
             Task.Run(() =>
             {
-                int WB = Processing.Width;
-                int H = Processing.Height;
-                for (int w = 0; w < WB; w++)
-                {
-                    for (int h = 0; h < H; h++)
+                ColorAdjustmentProcessor.CurrentColorAdjustmentProcessor.ProcessImage(Processing, OutputBitmap, arguments, () => {
+                    Dispatcher.Invoke(() =>
                     {
-                        var c = Processing.GetPixel(w, h);
-                        OutputBitmap.SetPixel(w, h, Process(c));
-                    }
-                }
-                Dispatcher.Invoke(() =>
-                {
-                    UpdateView(OutputBitmap);
-                    MainWindow.CurrentWindow.UnlockMainArea();
-                    if (action is not null) action();
+                        UpdateView(OutputBitmap);
+                        MainWindow.CurrentWindow.UnlockMainArea();
+                        if (action is not null) action();
+                    });
+                    GC.Collect();
                 });
-                GC.Collect();
             });
         }
         public void UpdateView(Bitmap Current)
@@ -122,73 +108,6 @@ namespace ImageUtilities
             var ImgSrc = Utilities.ImageSourceFromBitmap(Current);
             PreviewImage.Source = ImgSrc;
 
-        }
-        public Color Process(Color c)
-        {
-            byte R = c.R;
-            byte G = c.G;
-            byte B = c.B;
-            byte A = c.A;
-            if (isInventColor == true)
-            {
-                R = (byte)(byte.MaxValue - R);
-                G = (byte)(byte.MaxValue - G);
-                B = (byte)(byte.MaxValue - B);
-            }
-            if (WillAdjustBrightness)
-            {
-                {
-                    float RRate = R + BrightIntensity;
-                    R = (byte)(Math.Max(Math.Min(RRate, byte.MaxValue), 0));
-                }
-                {
-                    float RRate = G + BrightIntensity;
-                    G = (byte)(Math.Max(Math.Min(RRate, byte.MaxValue), 0));
-                }
-                {
-                    float RRate = B + BrightIntensity;
-                    B = (byte)(Math.Max(Math.Min(RRate, byte.MaxValue), 0));
-                }
-            }
-            if (WillScaleBrightness)
-            {
-                {
-                    float RRate = R * CIntensity;
-                    R = (byte)(Math.Max(Math.Min(RRate, byte.MaxValue), 0));
-                }
-                {
-                    float RRate = G * CIntensity;
-                    G = (byte)(Math.Max(Math.Min(RRate, byte.MaxValue), 0));
-                }
-                {
-                    float RRate = B * CIntensity;
-                    B = (byte)(Math.Max(Math.Min(RRate, byte.MaxValue), 0));
-                }
-            }
-            if (WillPerformColorBlend)
-            {
-                R = (byte)PerformBlend(R, CB_RValue);
-                G = (byte)PerformBlend(G, CB_GValue);
-                B = (byte)PerformBlend(B, CB_BValue);
-                if(WillPerformColorBlend_IgnoreTransparency==false)
-                A = (byte)PerformBlend(A, CB_AValue);
-                float PerformBlend(float Base, float Layer)
-                {
-
-                    if (ColorBlendMode == 1)
-                        return (float)Math.Min(Base * GetIntensity(Layer), byte.MaxValue);
-                    else if (ColorBlendMode == 0)
-                        return (float)Math.Min(Base + Layer, byte.MaxValue);
-                    else if (ColorBlendMode == 2)
-                        return (float)Math.Max(Base - Layer, 0);
-                    return Base;
-                }
-            }
-            {
-                Color Result = Color.FromArgb(A, R, G, B);
-                return Result;
-            }
-            float GetIntensity(double value) => (float)value / 255f;
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)

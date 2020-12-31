@@ -198,10 +198,16 @@ namespace CLUNL.Imaging
             Switches = new ();
             foreach (var item in Arguments)
             {
-                if(item is float)
+                if (item is float)
                 {
                     FloatArguments.Add((float)item);
-                }else if(item is bool)
+                }
+                else
+                if (item is int)
+                {
+                    FloatArguments.Add((int)item);
+                }
+                else if(item is bool)
                 {
                     Switches.Add((bool)item);
                 }
