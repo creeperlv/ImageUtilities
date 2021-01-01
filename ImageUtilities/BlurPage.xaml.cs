@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,33 +14,21 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Color = System.Drawing.Color;
+
 namespace ImageUtilities
 {
     /// <summary>
-    /// Interaction logic for TransparencyConversationPage.xaml
+    /// Interaction logic for BlurPage.xaml
     /// </summary>
-    public partial class TransparencyConversationPage : UserControl
+    public partial class BlurPage : UserControl
     {
-        public TransparencyConversationPage()
+        public BlurPage()
         {
             InitializeComponent();
         }
-        float RValue = 255;
-        float GValue = 255;
-        float BValue = 255;
-        float AValue = 255;
-        float R1Value = 0;
-        float G1Value = 0;
-        float B1Value = 0;
-        int CutoutMode1 = 0;
-        int CutoutMode2 = 0;
-        bool isTransparencyCutout = false;
-        bool isMixColor = false;
-        Bitmap Current;
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
             try
             {
                 if (Current is not null)
@@ -56,25 +45,28 @@ namespace ImageUtilities
             Current = new Bitmap(Operating.Width, Operating.Height);
             MainWindow.CurrentWindow.LockMainArea();
             ProcessImage(Operating, Current);
-
         }
+        Bitmap Current;
+        float RadiusValue;
+        float PixelSkipCount;
+        float SamplePixelSkipCount;
+        bool isRoundRange;
+        bool useWeight=false;
         public void ProcessImage(Bitmap Processing, Bitmap OutputBitmap, Action action = null)
         {
-            RValue = (float)R.Value;
-            GValue = (float)G.Value;
-            BValue = (float)B.Value;
-            R1Value = (float)R1.Value;
-            G1Value = (float)G1.Value;
-            B1Value = (float)B1.Value;
-            AValue = (float)Alpha.Value;
-            isTransparencyCutout = TransparencyCutout.IsChecked.Value;
-            isMixColor = MixColorTransparency.IsChecked.Value;
-            CutoutMode1 = CutoutMode.SelectedIndex;
-            CutoutMode2 = CutoutModeTC.SelectedIndex;
-            ProcessorArguments arguments = new ProcessorArguments(RValue, GValue, BValue, AValue, R1Value, G1Value, B1Value, (float)CutoutMode1, (float)CutoutMode2, isMixColor, isTransparencyCutout);
+            RadiusValue= (float)Radius.Value;
+            PixelSkipCount = (float)PixelSkip.Value + 1;
+            SamplePixelSkipCount = (float)SamplePixelSkip.Value + 1;
+            if (SamplePixelSkipCount > RadiusValue)
+            {
+                SamplePixelSkipCount = RadiusValue;
+            }
+            isRoundRange = RoundRange.IsChecked.Value;
+            useWeight = UseWeightedSample.IsChecked.Value;
+            ProcessorArguments arguments = new ProcessorArguments(RadiusValue,PixelSkipCount, SamplePixelSkipCount,isRoundRange,useWeight);
             Task.Run(() =>
             {
-                TransparencyProcessor.CurrentTransparencyProcessor.ProcessImage(Processing, OutputBitmap, arguments, () => {
+                BlurProcessor.CurrentBlurProcessor.ProcessImage(Processing, OutputBitmap, arguments, () => {
 
                     Dispatcher.Invoke(() =>
                     {
@@ -84,7 +76,7 @@ namespace ImageUtilities
                     });
                     GC.Collect();
                 });
-                
+
             });
         }
         public void UpdateView(Bitmap Current)
@@ -93,18 +85,6 @@ namespace ImageUtilities
             Preview.Source = ImgSrc;
 
         }
-
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (Current is not null) Current.Dispose();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Bitmap Operating = VariablePool.CurrentBitmap;

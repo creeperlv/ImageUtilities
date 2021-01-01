@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="ImageUtilities.BlurPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ImageUtilities"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="PREVIEW" FontWeight="Bold"/>
+        <Image x:Name="Preview" Grid.Row="1"/>
+        <StackPanel Grid.Row="2" Background="White">
+            <ScrollViewer MaxHeight="300">
+                <StackPanel>
+                    <TextBlock Text="Blur" FontSize="18"/>
+                    <Expander Header="Parameters">
+                        <StackPanel>
+                            <CheckBox Content="Use Round Sample Range" x:Name="RoundRange"/>
+                            <CheckBox Content="Use Weighted Sample" x:Name="UseWeightedSample"/>
+                            <TextBlock Text="Radius"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="Radius" Minimum="0" Value="{Binding Text, ElementName=RadiusBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="1024" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="RadiusBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="15"/>
+                            </Grid>
+                            <TextBlock Text="Process Pixel Skip"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="PixelSkip" Minimum="0" Value="{Binding Text, ElementName=PixelSkipBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="63" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="PixelSkipBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="0"/>
+                            </Grid>
+                            <TextBlock Text="Sample Pixel Skip"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="SamplePixelSkip" Minimum="0" Value="{Binding Text, ElementName=SamplePixelSkipBox, Mode=TwoWay, StringFormat=\{0:D\}, UpdateSourceTrigger=Default}" Maximum="{Binding Value, ElementName=Radius, Mode=OneWay}" SmallChange="1" LargeChange="100"/>
+                                <TextBox x:Name="SamplePixelSkipBox" MaxWidth="75" MinWidth="75" Grid.Column="1" InputScope="Number" Text="0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Header="More Options">
+                        <CheckBox IsChecked="True" x:Name="IsUseDownsize" Content="Use Downsized Image for faster preview"></CheckBox>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="View" Click="Button_Click"/>
+                <Button Content="Apply" Click="Button_Click_1"/>
+                <Button Content="Cancel" Click="Button_Click_2"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -37,6 +37,7 @@
                             <TextBlock Text="TOOLS" FontSize="16" FontWeight="Bold"/>
                         </Expander.Header>
                         <StackPanel>
+                            <Button Click="Button_Click_8" HorizontalContentAlignment="Left">Blur</Button>
                             <Button Visibility="Collapsed" HorizontalContentAlignment="Left">Carve Generator</Button>
                             <Button Click="Button_Click_6" HorizontalContentAlignment="Left">Color Adjustment</Button>
                             <Button Click="Button_Click_2" HorizontalContentAlignment="Left">Grayscale</Button>

@@ -4,7 +4,6 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Nullable>enable</Nullable>
     <Authors>Creeper Lv</Authors>
     <Company />
     <Product>Image Utilities</Product>

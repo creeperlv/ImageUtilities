@@ -202,5 +202,12 @@ namespace ImageUtilities
             CentralFrame.Children.Add(new AboutPage());
             GC.Collect();
         }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e)
+        {
+            CentralFrame.Children.Clear();
+            CentralFrame.Children.Add(new BlurPage());
+            GC.Collect();
+        }
     }
 }
