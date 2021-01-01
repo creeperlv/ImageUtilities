@@ -18,6 +18,7 @@ namespace CLUNL.Imaging
         float Radius = 1;
         float SquareRadius;
         float D;
+        float BlurMode = 0;
         float PixelSkips = 1;
         float SampleSkips = 1;
         bool isRoundSample = false;
@@ -26,7 +27,7 @@ namespace CLUNL.Imaging
         {
             if (arguments is not null)
             {
-                arguments.ApplyFloats(ref Radius, ref PixelSkips, ref SampleSkips);
+                arguments.ApplyFloats(ref Radius, ref PixelSkips, ref SampleSkips, ref BlurMode);
                 try
                 {
                     arguments.ApplyBools(ref isRoundSample, ref useWeight);
@@ -40,14 +41,29 @@ namespace CLUNL.Imaging
             W = Processing.Width;
             H = Processing.Height;
 
-            for (int x = 0; x <W; x++)
+            for (int x = 0; x < W; x++)
             {
                 if (x % (int)PixelSkips == 0)
                     for (int y = 0; y < H; y++)
                     {
                         if (y % (int)PixelSkips == 0)
                         {
-                            OutputBitmap.SetPixel(x, y, GatherAndMix(Processing, x, y));
+                            if (BlurMode == 0)
+                            {
+                                OutputBitmap.SetPixel(x, y, GatherAndMix(Processing, x, y));
+                            }
+                            else if (BlurMode == 1)
+                            {
+                                OutputBitmap.SetPixel(x, y, VerticalMix(Processing, x, y));
+                            }
+                            else if (BlurMode == 2)
+                            {
+                                OutputBitmap.SetPixel(x, y, HorizontalMix(Processing, x, y));
+                            }
+                            else if (BlurMode == 3)
+                            {
+                                OutputBitmap.SetPixel(x, y, CrossMix(Processing, x, y));
+                            }
                         }
                         else
                         {
@@ -66,7 +82,211 @@ namespace CLUNL.Imaging
         }
         int W;
         int H;
+        public Color CrossMix(Bitmap Target, int CenterX, int CenterY)
+        {
+            float Count = 0;
+            float R = 0;
+            float G = 0;
+            float B = 0;
+            float A = 0;
+            for (int y = 0; y < D; y++)
+            {
+                if (y % SampleSkips == 0)
+                {
+                    var disY = y - Radius;
+                    var PR = (disY * disY);
+                    {
+                        int TargetX = CenterX;
+                        int TargetY = CenterY + (int)disY;
+                        if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                        {
+                            var c = Target.GetPixel(TargetX, TargetY);
+                            if (useWeight == false)
+                            {
+                                Count++;
+                                R += c.R;
+                                G += c.G;
+                                B += c.B;
+                                A += c.A;
+                            }
+                            else
+                            {
+                                var rate = PR / SquareRadius;
+                                R += c.R * rate;
+                                G += c.G * rate;
+                                B += c.B * rate;
+                                A += c.A * rate;
+                                Count += rate;
+                            }
+                        }
+                    }
+                }
 
+            }
+            for (int x = 0; x < D; x++)
+            {
+                if (x % SampleSkips == 0)
+                {
+
+                    var disX = x - Radius;
+                    var PR = (disX * disX);
+                    {
+                        int TargetX = CenterX + (int)disX;
+                        int TargetY = CenterY;
+                        if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                        {
+                            var c = Target.GetPixel(TargetX, TargetY);
+                            if (useWeight == false)
+                            {
+                                Count++;
+                                R += c.R;
+                                G += c.G;
+                                B += c.B;
+                                A += c.A;
+                            }
+                            else
+                            {
+                                var rate = PR / SquareRadius;
+                                R += c.R * rate;
+                                G += c.G * rate;
+                                B += c.B * rate;
+                                A += c.A * rate;
+                                Count += rate;
+                            }
+                        }
+                    }
+                }
+            }
+            if (Count != 0)
+                return Color.FromArgb((byte)(A / Count), (byte)(R / Count), (byte)(G / Count), (byte)(B / Count));
+            else return Color.Transparent;
+        }
+        public Color VerticalMix(Bitmap Target, int CenterX, int CenterY)
+        {
+            float Count = 0;
+            float R = 0;
+            float G = 0;
+            float B = 0;
+            float A = 0;
+            for (int y = 0; y < D; y++)
+            {
+                if (y % SampleSkips == 0)
+                {
+                    var disY = y - Radius;
+                    var PR = (disY * disY);
+                    if (PR <= SquareRadius)
+                    {
+                        int TargetX = CenterX;
+                        int TargetY = CenterY + y - (int)Radius;
+                        if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                        {
+                            var c = Target.GetPixel(TargetX, TargetY);
+                            if (useWeight == false)
+                            {
+                                Count++;
+                                R += c.R;
+                                G += c.G;
+                                B += c.B;
+                                A += c.A;
+                            }
+                            else
+                            {
+                                var rate = PR / SquareRadius;
+                                R += c.R * rate;
+                                G += c.G * rate;
+                                B += c.B * rate;
+                                A += c.A * rate;
+                                Count += rate;
+                            }
+                        }
+                    }
+                }
+            }
+            for (int x = 0; x < D; x++)
+            {
+                if (x % SampleSkips == 0)
+                {
+
+                    var disX = x - Radius;
+                    var PR = (disX * disX);
+                    if (PR <= SquareRadius)
+                    {
+                        int TargetX = CenterX + x - (int)Radius;
+                        int TargetY = CenterY;
+                        if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                        {
+                            var c = Target.GetPixel(TargetX, TargetY);
+                            if (useWeight == false)
+                            {
+                                Count++;
+                                R += c.R;
+                                G += c.G;
+                                B += c.B;
+                                A += c.A;
+                            }
+                            else
+                            {
+                                var rate = PR / SquareRadius;
+                                R += c.R * rate;
+                                G += c.G * rate;
+                                B += c.B * rate;
+                                A += c.A * rate;
+                                Count += rate;
+                            }
+                        }
+                    }
+                }
+            }
+            if (Count != 0)
+                return Color.FromArgb((byte)(A / Count), (byte)(R / Count), (byte)(G / Count), (byte)(B / Count));
+            else return Color.Transparent;
+        }
+        public Color HorizontalMix(Bitmap Target, int CenterX, int CenterY)
+        {
+            float Count = 0;
+            float R = 0;
+            float G = 0;
+            float B = 0;
+            float A = 0;
+            for (int x = 0; x < D; x++)
+            {
+                if (x % SampleSkips == 0)
+                {
+
+                    var disX = x - Radius;
+                    var PR = (disX * disX);
+                    if (PR <= SquareRadius)
+                    {
+                        int TargetX = CenterX + x - (int)Radius;
+                        int TargetY = CenterY;
+                        if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                        {
+                            var c = Target.GetPixel(TargetX, TargetY);
+                            if (useWeight == false)
+                            {
+                                Count++;
+                                R += c.R;
+                                G += c.G;
+                                B += c.B;
+                                A += c.A;
+                            }
+                            else
+                            {
+                                var rate = PR / SquareRadius;
+                                R += c.R * rate;
+                                G += c.G * rate;
+                                B += c.B * rate;
+                                A += c.A * rate;
+                                Count += rate;
+                            }
+                        }
+                    }
+                }
+            }
+            if (Count != 0)
+                return Color.FromArgb((byte)(A / Count), (byte)(R / Count), (byte)(G / Count), (byte)(B / Count));
+            else return Color.Transparent;
+        }
         public Color GatherAndMix(Bitmap Target, int CenterX, int CenterY)
         {
 

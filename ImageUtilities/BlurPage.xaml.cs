@@ -50,6 +50,7 @@ namespace ImageUtilities
         float RadiusValue;
         float PixelSkipCount;
         float SamplePixelSkipCount;
+        int BlurMode = 0;
         bool isRoundRange;
         bool useWeight=false;
         public void ProcessImage(Bitmap Processing, Bitmap OutputBitmap, Action action = null)
@@ -57,13 +58,14 @@ namespace ImageUtilities
             RadiusValue= (float)Radius.Value;
             PixelSkipCount = (float)PixelSkip.Value + 1;
             SamplePixelSkipCount = (float)SamplePixelSkip.Value + 1;
+            BlurMode = BlurModeSelector.SelectedIndex;
             if (SamplePixelSkipCount > RadiusValue)
             {
                 SamplePixelSkipCount = RadiusValue;
             }
             isRoundRange = RoundRange.IsChecked.Value;
             useWeight = UseWeightedSample.IsChecked.Value;
-            ProcessorArguments arguments = new ProcessorArguments(RadiusValue,PixelSkipCount, SamplePixelSkipCount,isRoundRange,useWeight);
+            ProcessorArguments arguments = new ProcessorArguments(RadiusValue,PixelSkipCount, SamplePixelSkipCount,BlurMode,isRoundRange,useWeight);
             Task.Run(() =>
             {
                 BlurProcessor.CurrentBlurProcessor.ProcessImage(Processing, OutputBitmap, arguments, () => {
