@@ -11,12 +11,14 @@ namespace CLUNL.Imaging.GPUAcceleration
     {
         public static int[] BitmapToIntArray(Bitmap TargetBitmap)
         {
-            int[] result = new int[TargetBitmap.Width * TargetBitmap.Height*4];
-            for (int x = 0; x < TargetBitmap.Width; x++)
+            int[] result = new int[(TargetBitmap.Width+1) * (TargetBitmap.Height)*4];
+            int W = TargetBitmap.Width;
+            int H = TargetBitmap.Height;
+            for (int x = 0; x < W; x++)
             {
-                for (int y = 0; y < TargetBitmap.Height; y++)
+                for (int y = 0; y < H; y++)
                 {
-                    int index = x * y*4;
+                    int index = (x * H + y) * 4;
                     Color c = TargetBitmap.GetPixel(x, y);
                     result[index] = c.R;
                     result[index+1] = c.G;
@@ -33,7 +35,7 @@ namespace CLUNL.Imaging.GPUAcceleration
             {
                 for (int y = 0; y < H; y++)
                 {
-                    int index = x * y*4;
+                    int index = (x *H+ y)*4;
                     TargetMap.SetPixel(x, y, Color.FromArgb(data[index + 3], data[index], data[index + 1], data[index + 2]));
                 }
             }
@@ -45,7 +47,7 @@ namespace CLUNL.Imaging.GPUAcceleration
             {
                 for (int y = 0; y < H; y++)
                 {
-                    int index = x * y * 4;
+                    int index = (x * H + y )* 4;
                     result.SetPixel(x, y, Color.FromArgb(array[index + 3], array[index], array[index + 1], array[index + 2]));
                 }
             }

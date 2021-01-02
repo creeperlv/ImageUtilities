@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CLUNL.Imaging.GPUAcceleration
 {
-    public class CommonGPUAcceleration
+    public static class CommonGPUAcceleration
     {
         static CommonGPUAcceleration()
         {
@@ -41,8 +41,14 @@ namespace CLUNL.Imaging.GPUAcceleration
         {
             if (CurrentContext is not null)
             {
-                CurrentContext.Value.Dispose();
-                CurrentQueue.Dispose();
+                Cl.ReleaseCommandQueue(CurrentQueue);
+                Cl.ReleaseContext(CurrentContext.Value);
+                //CurrentContext.Value.Dispose();
+                //CurrentQueue.Dispose();
+                if(program is not null)
+                {
+                    Cl.ReleaseProgram(program.Value);
+                }
             }
             if (index is >= 0)
             {
@@ -65,7 +71,7 @@ namespace CLUNL.Imaging.GPUAcceleration
                 throw new Exception(ec.ToString());
             }
         }
-        static Program program;
+        static Program? program=null;
         public static Kernel Compile(string sourceCode, string targetKernel)
         {
             ErrorCode ec;
@@ -74,19 +80,42 @@ namespace CLUNL.Imaging.GPUAcceleration
             {
                 throw new Exception("Cannot create program.");
             }
-            ec = Cl.BuildProgram(program, 1, new[] { GPUInUse }, string.Empty, null, IntPtr.Zero);
+            ec = Cl.BuildProgram(program.Value, 1, new[] { GPUInUse }, string.Empty, null, IntPtr.Zero);
             if (ec is not ErrorCode.Success)
             {
                 throw new Exception("Cannot create program.");
             }
 
-            Kernel kernel = Cl.CreateKernel(program, targetKernel, out ec);
+            Kernel kernel = Cl.CreateKernel(program.Value, targetKernel, out ec);
             if (ec is not ErrorCode.Success)
             {
                 throw new Exception("Cannot create kernel.");
             }
 
             return kernel;
+        }
+        public static void SetArg<T>(Kernel kernel,uint index,T obj) where T : struct
+        {
+            ErrorCode ec;
+            ec = Cl.SetKernelArg(kernel, index, obj);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
+        }
+        public static unsafe IntPtr ToIntPtr(this int[] obj)
+        {
+            IntPtr PtrA = IntPtr.Zero;
+            fixed (int* Ap = obj) return new IntPtr(Ap);
+        }
+        public static void SetArg(Kernel kernel,uint index,IMem buffer)
+        {
+            ErrorCode ec;
+            ec = Cl.SetKernelArg(kernel, index, buffer);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
         }
         public static void SetArg<T>(Kernel kernel, Bool BlockWrite, uint index, int intPtrSize, IMem DeviceMem, int Size, T RealPara, bool WriteBuffer = true) where T : struct
         {
@@ -105,10 +134,10 @@ namespace CLUNL.Imaging.GPUAcceleration
                 throw new Exception(ec.ToString());
             }
         }
-        public static void SetArg<T>(Kernel kernel, Bool BlockWrite, uint index, IMem<T> DeviceMem, int Size, T[] RealPara, bool WriteBuffer = true) where T : struct
+        public static void SetArg<T>(Kernel kernel, Bool BlockWrite, uint index, IMem<T> DeviceMem, T[] RealPara, bool WriteBuffer = true) where T : struct
         {
             ErrorCode ec;
-            ec = Cl.SetKernelArg<T>(kernel, index, DeviceMem);
+            ec = Cl.SetKernelArg(kernel, index, DeviceMem);
             if (ec is not ErrorCode.Success)
             {
                 throw new Exception(ec.ToString());
@@ -131,7 +160,7 @@ namespace CLUNL.Imaging.GPUAcceleration
             }
             return c;
         }
-        public static IMem<T> CreateBuffer<T>(MemFlags flag, int Size) where T:struct
+        public static IMem<T> CreateBuffer<T>(MemFlags flag, int Size) where T : struct
         {
             ErrorCode ec;
             IMem<T> c = Cl.CreateBuffer<T>(CurrentContext.Value, flag, Size, out ec);
@@ -141,21 +170,32 @@ namespace CLUNL.Imaging.GPUAcceleration
             }
             return c;
         }
-        public static void Execute(Kernel kernel, uint WorkDim, IntPtr[] GlobalWorkSize, int size)
+        public static IMem<T> CreateBuffer<T>(MemFlags flag, T[] Obj) where T : struct
         {
             ErrorCode ec;
-            ec = Cl.EnqueueNDRangeKernel(CurrentQueue, kernel, WorkDim, null, GlobalWorkSize, null, 0, null, out _);
+            IMem<T> c = Cl.CreateBuffer<T>(CurrentContext.Value, MemFlags.CopyHostPtr | flag, Obj, out ec);
             if (ec is not ErrorCode.Success)
             {
                 throw new Exception(ec.ToString());
             }
-            Cl.EnqueueBarrier(CurrentQueue);
+            return c;
         }
-        public static void ReadArg<T>(IMem DeviceMem, ref T[] obj) where T : struct
+        public static void Execute(Kernel kernel, uint WorkDim, IntPtr[] GlobalWorkSize, IntPtr[] LocalWorkSize)
+        {
+            ErrorCode ec;
+            Cl.Finish(CurrentQueue);
+            ec = Cl.EnqueueNDRangeKernel(CurrentQueue, kernel, WorkDim, null, GlobalWorkSize, LocalWorkSize, 0, null, out _);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
+            Cl.Finish(CurrentQueue);
+        }
+        public static void ReadArg<T>(IMem<T> DeviceMem, ref T[] obj) where T : struct
         {
             IntPtr event_handle = IntPtr.Zero;
             ErrorCode ec
-             = Cl.EnqueueReadBuffer(CurrentQueue, DeviceMem, Bool.True, 0, obj.Length, obj, 0, null, out _);
+             = Cl.EnqueueReadBuffer(CurrentQueue, DeviceMem, Bool.True,  obj, 0, null, out _);
             if (ec is not ErrorCode.Success)
             {
                 throw new Exception(ec.ToString());
