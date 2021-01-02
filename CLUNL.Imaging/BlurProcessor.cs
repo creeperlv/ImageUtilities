@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CLUNL.Imaging.GPUAcceleration;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -10,6 +11,11 @@ namespace CLUNL.Imaging
 {
     public class BlurProcessor : IImageProcessor
     {
+        readonly static string BlurProgram = @"
+__kernel void ProcessImage(byte* InBitmap,byte* OutBitmap, int H,int W,float Radius,int BlurMode,float PixelSkips,float SampleSkips,boolean isRoundSample,boolean useWeight){
+    return;
+}
+";
         public static BlurProcessor CurrentBlurProcessor = new();
         public Color Process(Color c)
         {
@@ -21,13 +27,14 @@ namespace CLUNL.Imaging
         float BlurMode = 0;
         float PixelSkips = 1;
         float SampleSkips = 1;
+        float ComputeMode = 0;
         bool isRoundSample = false;
         bool useWeight = false;
         public void ProcessImage(Bitmap Processing, Bitmap OutputBitmap, ProcessorArguments arguments, Action OnCompleted = null)
         {
             if (arguments is not null)
             {
-                arguments.ApplyFloats(ref Radius, ref PixelSkips, ref SampleSkips, ref BlurMode);
+                arguments.ApplyFloats(ref Radius, ref PixelSkips, ref SampleSkips, ref BlurMode,ref ComputeMode);
                 try
                 {
                     arguments.ApplyBools(ref isRoundSample, ref useWeight);
@@ -35,6 +42,14 @@ namespace CLUNL.Imaging
                 catch (Exception)
                 {
                 }
+            }
+            if (ComputeMode != 0)
+            {
+                int GPU = (int)ComputeMode - 1;
+                CommonGPUAcceleration.SetGPU(GPU);
+                var imageByte = Utilities.BitmapToByteArray(Processing);
+                var Kernel=CommonGPUAcceleration.Compile(BlurProgram,"ProcessImage");
+                return;
             }
             D = Radius * 2;
             SquareRadius = Radius * Radius;

@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using CLUNL.Imaging.GPUAcceleration;
+using Microsoft.Win32;
+using OpenCL.NetCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -16,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
 namespace ImageUtilities
 {
@@ -193,6 +196,13 @@ namespace ImageUtilities
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var gpus=CommonGPUAcceleration.EnumerateGPUs();
+            foreach (var item in gpus)
+            {
+                ErrorCode ec;
+                string Name = Cl.GetDeviceInfo(item, DeviceInfo.Name, out ec) + "," + Cl.GetPlatformInfo(Cl.GetDeviceInfo(item, DeviceInfo.Platform, out ec).CastTo<Platform>(), PlatformInfo.Name, out ec);
+                VariablePool.GPUs.Add(Name);
+            }
             ToBlankPage();
         }
 

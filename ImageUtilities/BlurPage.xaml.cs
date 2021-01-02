@@ -51,6 +51,7 @@ namespace ImageUtilities
         float PixelSkipCount;
         float SamplePixelSkipCount;
         int BlurMode = 0;
+        int AccelerationMode = 0;
         bool isRoundRange;
         bool useWeight=false;
         public void ProcessImage(Bitmap Processing, Bitmap OutputBitmap, Action action = null)
@@ -65,7 +66,7 @@ namespace ImageUtilities
             }
             isRoundRange = RoundRange.IsChecked.Value;
             useWeight = UseWeightedSample.IsChecked.Value;
-            ProcessorArguments arguments = new ProcessorArguments(RadiusValue,PixelSkipCount, SamplePixelSkipCount,BlurMode,isRoundRange,useWeight);
+            ProcessorArguments arguments = new ProcessorArguments(RadiusValue,PixelSkipCount, SamplePixelSkipCount,BlurMode, AccelerationMode, isRoundRange,useWeight);
             Task.Run(() =>
             {
                 BlurProcessor.CurrentBlurProcessor.ProcessImage(Processing, OutputBitmap, arguments, () => {
@@ -102,6 +103,14 @@ namespace ImageUtilities
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             MainWindow.CurrentWindow.ToBlankPage();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in VariablePool.GPUs)
+            {
+                ComputeMode.Items.Add(new ComboBoxItem() { Content= item });
+            }
         }
     }
 }

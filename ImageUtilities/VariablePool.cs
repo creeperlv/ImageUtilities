@@ -18,6 +18,7 @@ namespace ImageUtilities
         //public static Bitmap CurrentBitmap_Original;
         public static string CurrentFile;
         public static Image OriginalImage;
+        public static List<string> GPUs=new ();
     }
     static class Utilities
     {
