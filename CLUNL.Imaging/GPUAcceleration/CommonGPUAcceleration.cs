@@ -13,8 +13,8 @@ namespace CLUNL.Imaging.GPUAcceleration
         {
             InitLibrary();
         }
-        static List<Device> devs = new ();
-        static List<Platform> platforms = new ();
+        static List<Device> devs = new();
+        static List<Platform> platforms = new();
         public static void InitLibrary()
         {
             {
@@ -39,41 +39,42 @@ namespace CLUNL.Imaging.GPUAcceleration
         static Context? CurrentContext = null;
         public static void SetGPU(int index)
         {
-            if(CurrentContext is not null)
+            if (CurrentContext is not null)
             {
                 CurrentContext.Value.Dispose();
                 CurrentQueue.Dispose();
             }
-            if(index is >= 0)
+            if (index is >= 0)
             {
-                if(index < devs.Count)
+                if (index < devs.Count)
                 {
                     GPUInUse = devs[index];
                 }
             }
-            var p=Cl.GetDeviceInfo(GPUInUse, DeviceInfo.Platform, out _).CastTo<Platform>();
+            var p = Cl.GetDeviceInfo(GPUInUse, DeviceInfo.Platform, out _).CastTo<Platform>();
 
             ErrorCode ec;
-            CurrentContext=Cl.CreateContext(null,1,    new[] { GPUInUse}, null, IntPtr.Zero, out ec);
-            if(ec is not ErrorCode.Success)
+            CurrentContext = Cl.CreateContext(null, 1, new[] { GPUInUse }, null, IntPtr.Zero, out ec);
+            if (ec is not ErrorCode.Success)
             {
                 throw new Exception(ec.ToString());
             }
-            CurrentQueue=Cl.CreateCommandQueue(CurrentContext.Value, GPUInUse, (CommandQueueProperties)0, out ec);
+            CurrentQueue = Cl.CreateCommandQueue(CurrentContext.Value, GPUInUse, (CommandQueueProperties)0, out ec);
             if (ec is not ErrorCode.Success)
             {
                 throw new Exception(ec.ToString());
             }
         }
-        public static Kernel Compile(string sourceCode,string targetKernel)
+        static Program program;
+        public static Kernel Compile(string sourceCode, string targetKernel)
         {
             ErrorCode ec;
-            Program program = Cl.CreateProgramWithSource(CurrentContext.Value, 1, new[] { sourceCode }, null, out ec);
+            program = Cl.CreateProgramWithSource(CurrentContext.Value, 1, new[] { sourceCode }, null, out ec);
             if (ec is not ErrorCode.Success)
             {
                 throw new Exception("Cannot create program.");
             }
-            ec =Cl.BuildProgram(program, 1, new[] { GPUInUse }, string.Empty, null, IntPtr.Zero);
+            ec = Cl.BuildProgram(program, 1, new[] { GPUInUse }, string.Empty, null, IntPtr.Zero);
             if (ec is not ErrorCode.Success)
             {
                 throw new Exception("Cannot create program.");
@@ -87,27 +88,78 @@ namespace CLUNL.Imaging.GPUAcceleration
 
             return kernel;
         }
-        public static void SetArg(Kernel kernel,Bool BlockWrite,int index,int intPtrSize,IMem DeviceMem,int Size,object RealPara,bool WriteBuffer=true)
+        public static void SetArg<T>(Kernel kernel, Bool BlockWrite, uint index, int intPtrSize, IMem DeviceMem, int Size, T RealPara, bool WriteBuffer = true) where T : struct
         {
-            _=Cl.SetKernelArg(kernel, 0, new IntPtr(intPtrSize), DeviceMem);
-            if(WriteBuffer)
-            Cl.EnqueueWriteBuffer(CurrentQueue, DeviceMem, BlockWrite, IntPtr.Zero,
-                    new IntPtr(Size),
-                    RealPara, 0, null, out _);
+            ErrorCode ec;
+            ec = Cl.SetKernelArg(kernel, index, DeviceMem);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
+            if (WriteBuffer) ec =
+             Cl.EnqueueWriteBuffer(CurrentQueue, DeviceMem, BlockWrite, IntPtr.Zero,
+                     new IntPtr(Size),
+                     RealPara, 0, null, out _);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
         }
-        public static IMem CreateBuffer(MemFlags flag,int Size)
+        public static void SetArg<T>(Kernel kernel, Bool BlockWrite, uint index, IMem<T> DeviceMem, int Size, T[] RealPara, bool WriteBuffer = true) where T : struct
         {
-            return Cl.CreateBuffer(CurrentContext.Value, MemFlags.CopyHostPtr | flag, Size, out _);
+            ErrorCode ec;
+            ec = Cl.SetKernelArg<T>(kernel, index, DeviceMem);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
+            if (WriteBuffer) ec =
+             Cl.EnqueueWriteBuffer<T>(CurrentQueue, DeviceMem, BlockWrite,
+                     RealPara, 0, null, out _);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
         }
-        public static void Execute(Kernel kernel,int size)
+        public static IMem CreateBuffer(MemFlags flag, int Size)
         {
-            Cl.EnqueueNDRangeKernel(CurrentQueue, kernel, 1, null, new IntPtr[] {new IntPtr(size) }, null, 0, null, out _);
+            ErrorCode ec;
+            var c = Cl.CreateBuffer(CurrentContext.Value, flag, Size, out ec);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
+            return c;
+        }
+        public static IMem<T> CreateBuffer<T>(MemFlags flag, int Size) where T:struct
+        {
+            ErrorCode ec;
+            IMem<T> c = Cl.CreateBuffer<T>(CurrentContext.Value, flag, Size, out ec);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
+            return c;
+        }
+        public static void Execute(Kernel kernel, uint WorkDim, IntPtr[] GlobalWorkSize, int size)
+        {
+            ErrorCode ec;
+            ec = Cl.EnqueueNDRangeKernel(CurrentQueue, kernel, WorkDim, null, GlobalWorkSize, null, 0, null, out _);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
             Cl.EnqueueBarrier(CurrentQueue);
         }
-        public static void ReadArg<T>(IMem DeviceMem,ref T[] obj) where T : struct
+        public static void ReadArg<T>(IMem DeviceMem, ref T[] obj) where T : struct
         {
             IntPtr event_handle = IntPtr.Zero;
-            _= Cl.EnqueueReadBuffer(CurrentQueue, DeviceMem, Bool.True, 0, obj.Length, obj, 0, null, out _);
+            ErrorCode ec
+             = Cl.EnqueueReadBuffer(CurrentQueue, DeviceMem, Bool.True, 0, obj.Length, obj, 0, null, out _);
+            if (ec is not ErrorCode.Success)
+            {
+                throw new Exception(ec.ToString());
+            }
         }
     }
 }

@@ -50,7 +50,7 @@ namespace CLUNL.Imaging
                 int BoolSize = sizeof(bool);
                 int IntSize = sizeof(int);
                 int BlurMode = (int)this.BlurMode;
-                var A0 = CommonGPUAcceleration.CreateBuffer(MemFlags.ReadOnly, imageByte.Length * sizeof(int));
+                var A0 = CommonGPUAcceleration.CreateBuffer<int>(MemFlags.ReadOnly, imageByte.Length );
                 var A1 = CommonGPUAcceleration.CreateBuffer(MemFlags.ReadOnly, IntSize);//Processing.Height
                 var A2 = CommonGPUAcceleration.CreateBuffer(MemFlags.ReadOnly, IntSize);//Width
                 var A3 = CommonGPUAcceleration.CreateBuffer(MemFlags.ReadOnly, FloatSize);//Radius
@@ -59,20 +59,21 @@ namespace CLUNL.Imaging
                 var A6 = CommonGPUAcceleration.CreateBuffer(MemFlags.ReadOnly, FloatSize);//SampleSkips
                 var A7 = CommonGPUAcceleration.CreateBuffer(MemFlags.ReadOnly, BoolSize);//isRoundSample
                 var A8 = CommonGPUAcceleration.CreateBuffer(MemFlags.ReadOnly, BoolSize);//useWeight
-                var A9 = CommonGPUAcceleration.CreateBuffer(MemFlags.WriteOnly, imageByte.Length * sizeof(int));//Result
-                CommonGPUAcceleration.SetArg(Kernel, Bool.True, 0, sizeof(byte) * imageByte.Length, A0, imageByte.Length * sizeof(byte), imageByte);
+                var A9 = CommonGPUAcceleration.CreateBuffer<int>(MemFlags.WriteOnly, imageByte.Length);//Result
+                CommonGPUAcceleration.SetArg<int>(Kernel, Bool.True, 0, A0, 0, imageByte);
                 CommonGPUAcceleration.SetArg(Kernel, Bool.True, 1, IntSize, A1, IntSize, Processing.Height);
                 CommonGPUAcceleration.SetArg(Kernel, Bool.True, 2, IntSize, A2, IntSize, Processing.Width);
                 CommonGPUAcceleration.SetArg(Kernel, Bool.True, 3, FloatSize, A3, FloatSize, Radius);
                 CommonGPUAcceleration.SetArg(Kernel, Bool.True, 4, IntSize, A4, IntSize, BlurMode);
                 CommonGPUAcceleration.SetArg(Kernel, Bool.True, 5, FloatSize, A5, FloatSize, PixelSkips);
                 CommonGPUAcceleration.SetArg(Kernel, Bool.True, 6, FloatSize, A6, FloatSize, SampleSkips);
-                CommonGPUAcceleration.SetArg(Kernel, Bool.True, 7, BoolSize, A7, BoolSize, isRoundSample);
-                CommonGPUAcceleration.SetArg(Kernel, Bool.True, 8, BoolSize, A8, BoolSize, useWeight);
-                CommonGPUAcceleration.SetArg(Kernel, Bool.True, 8, BoolSize, A9, BoolSize, useWeight,false);
-                CommonGPUAcceleration.Execute(Kernel, imageByte.Length * sizeof(int));
+                CommonGPUAcceleration.SetArg(Kernel, Bool.True, 7, IntSize, A7, IntSize, isRoundSample==true?1:0);
+                CommonGPUAcceleration.SetArg(Kernel, Bool.True, 8, IntSize, A8, IntSize, useWeight == true ?1:0);
+                CommonGPUAcceleration.SetArg<int>(Kernel, Bool.True, 9, A9, 0, result,false);
+                CommonGPUAcceleration.Execute(Kernel,2,new IntPtr[] {new (Processing.Width),new (Processing.Height) }, imageByte.Length * sizeof(int));
                 CommonGPUAcceleration.ReadArg<int>(A9,ref result);
                 Utilities.WriteToBitmap(OutputBitmap, result);
+                if (OnCompleted is not null) OnCompleted();
                 return;
             }
             D = Radius * 2;

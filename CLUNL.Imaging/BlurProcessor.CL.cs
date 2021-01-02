@@ -2,15 +2,58 @@
 {
     public partial class BlurProcessor
     {
-        readonly static string BlurProgram = @"
+        public readonly static string TestProgram = @"
+void AreaMix(int* Original, int* Target, int CenterX, int CenterY,int D,int H,int W,float Radius,float SquareRadius,int SampleSkips,int isRoundSample,int useWeight){}
+__kernel void ProcessImage(__global int* InBitmap,int ImgH,int ImgW, float ImgRadius,
+int ImgBlurMode,float ImgPixelSkips, float ImgSampleSkips, int ImgisRoundSample, int ImguseWeight,__global int* OutBitmap){
+int H,W,BlurMode,PixelSkips,SampleSkips;
+    float Radius,SquareRadius;
+    float D;
+    int isRoundSample,useWeight;    
+    H=ImgH;
+    W=ImgW;
+    Radius=ImgRadius;
+    D=Radius*2;
+    SquareRadius=Radius*Radius;
+    PixelSkips=(int)ImgPixelSkips;
+    SampleSkips=(int)ImgSampleSkips;
+    isRoundSample=ImgisRoundSample;
+    useWeight=ImguseWeight;
+    int x = get_global_id(0);
+    int y = get_global_id(1);
+    int z=x%y;
+    float a=z+1;
+if(x%PixelSkips==0){
+                if(y%PixelSkips==0){
+                    if(BlurMode==0){
+                        int index=x*y*4;
+                        //AreaMix(InBitmap,OutBitmap,x,y,D,H,W,Radius,SquareRadius,SampleSkips,isRoundSample,useWeight);
+                    }
 
-void AreaMix(__global int* Original,__global int* Target, int CenterX, int CenterY,int D,int H,int W,float Radius,float SquareRadius,int SampleSkips,bool isRoundSample,bool useWeight){
+                }else{
+                    int index=x*y*4;
+                    OutBitmap[index]=InBitmap[index];
+                    OutBitmap[index+1]=InBitmap[index+1];
+                    OutBitmap[index+2]=InBitmap[index+2];
+                    OutBitmap[index+3]=InBitmap[index+3];
+                }
+            
+        }else{
+                int index=x*y*4;
+                OutBitmap[index]=InBitmap[index];
+                OutBitmap[index+1]=InBitmap[index+1];
+                OutBitmap[index+2]=InBitmap[index+2];
+                OutBitmap[index+3]=InBitmap[index+3];
+        }
+}";
+        public readonly static string BlurProgram = @"
+void AreaMix(__global int* Original,__global  int* Target, int CenterX, int CenterY,int D,int H,int W,float Radius,float SquareRadius,int SampleSkips,int isRoundSample,int useWeight){
     float Count = 0;
     float R = 0;
     float G = 0;
     float B = 0;
     float A = 0;
-    if (isRoundSample == true)
+    if (isRoundSample == 1)
     {
         for (int x = 0; x < D; x++)
         {
@@ -29,7 +72,7 @@ void AreaMix(__global int* Original,__global int* Target, int CenterX, int Cente
                             int Index=TargetX*TargetY*4;
                             if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
                             {
-                                if (useWeight == false)
+                                if (useWeight == 0)
                                 {
                                     Count++;
                                     R += Original[Index];
@@ -66,7 +109,7 @@ void AreaMix(__global int* Original,__global int* Target, int CenterX, int Cente
                                         int Index=TargetX*TargetY*4;
                                 if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
                                 {
-                                    if (useWeight == true)
+                                    if (useWeight == 1)
                                     {
                                         float disX = x - Radius;
                                         float disY = y - Radius;
@@ -109,12 +152,12 @@ void AreaMix(__global int* Original,__global int* Target, int CenterX, int Cente
     }
 }
 __kernel void ProcessImage(__global int* InBitmap,int ImgH,int ImgW, float ImgRadius,
-int ImgBlurMode,float ImgPixelSkips, float ImgSampleSkips, bool ImgisRoundSample, bool ImguseWeight,__global int* OutBitmap)
+int ImgBlurMode,float ImgPixelSkips, float ImgSampleSkips, int ImgisRoundSample, int ImguseWeight,__global int* OutBitmap)
 {
     int H,W,BlurMode,PixelSkips,SampleSkips;
     float Radius,SquareRadius;
     float D;
-    bool isRoundSample,useWeight;    
+    int isRoundSample,useWeight;    
     H=ImgH;
     W=ImgW;
     Radius=ImgRadius;
@@ -131,7 +174,7 @@ int ImgBlurMode,float ImgPixelSkips, float ImgSampleSkips, bool ImgisRoundSample
                 if(y%PixelSkips==0){
                     if(BlurMode==0){
                         int index=x*y*4;
-                        //AreaMix(InBitmap,OutBitmap,x,y,D,H,W,Radius,SquareRadius,SampleSkips,isRoundSample,useWeight);
+                        AreaMix(InBitmap,OutBitmap,x,y,D,H,W,Radius,SquareRadius,SampleSkips,isRoundSample,useWeight);
                     }
 
                 }else{

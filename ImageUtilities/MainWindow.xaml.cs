@@ -1,4 +1,5 @@
-﻿using CLUNL.Imaging.GPUAcceleration;
+﻿using CLUNL.Imaging;
+using CLUNL.Imaging.GPUAcceleration;
 using Microsoft.Win32;
 using OpenCL.NetCore;
 using System;
@@ -204,6 +205,9 @@ namespace ImageUtilities
                 VariablePool.GPUs.Add(Name);
             }
             ToBlankPage();
+//            CommonGPUAcceleration.SetGPU(0);
+//            ShowDialog("OpenCL", ""+VariablePool.GPUs[1]);
+//            var Kernel = CommonGPUAcceleration.Compile(BlurProcessor.BlurProgram, "ProcessImage");
         }
 
         private void Button_Click_7(object sender, RoutedEventArgs e)
