@@ -59,6 +59,7 @@ namespace ImageUtilities
             RadiusValue= (float)Radius.Value;
             PixelSkipCount = (float)PixelSkip.Value + 1;
             SamplePixelSkipCount = (float)SamplePixelSkip.Value + 1;
+            AccelerationMode = ComputeMode.SelectedIndex;
             BlurMode = BlurModeSelector.SelectedIndex;
             if (SamplePixelSkipCount > RadiusValue)
             {
