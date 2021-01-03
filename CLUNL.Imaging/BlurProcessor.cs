@@ -39,6 +39,14 @@ namespace CLUNL.Imaging
                 {
                 }
             }
+            if (Processing == null)
+            {
+                if (OnCompleted != null)
+                {
+                    OnCompleted();
+                }
+                return;
+            }
             if (ComputeMode != 0)
             {
                 int GPU = (int)ComputeMode - 1;
@@ -75,19 +83,22 @@ namespace CLUNL.Imaging
                 Utilities.WriteToBitmap(OutputBitmap, result);
                 {
                     //Wipe.
-                    A0.Dispose();
-                    A1.Dispose();
-                    A2.Dispose();
-                    A3.Dispose();
-                    A4.Dispose();
-                    A5.Dispose();
-                    A6.Dispose();
-                    A7.Dispose();
-                    A8.Dispose();
-                    A9.Dispose();
-                    Kernel.Dispose();
+                    Cl.ReleaseMemObject(A0);
+                    Cl.ReleaseMemObject(A1);
+                    Cl.ReleaseMemObject(A2);
+                    Cl.ReleaseMemObject(A3);
+                    Cl.ReleaseMemObject(A4);
+                    Cl.ReleaseMemObject(A5);
+                    Cl.ReleaseMemObject(A6);
+                    Cl.ReleaseMemObject(A7);
+                    Cl.ReleaseMemObject(A8);
+                    Cl.ReleaseMemObject(A9);
+                    Cl.ReleaseKernel(Kernel);
+                    
                 }
+                result = null;
                 if (OnCompleted is not null) OnCompleted();
+                GC.Collect();
                 return;
             }
             D = Radius * 2;

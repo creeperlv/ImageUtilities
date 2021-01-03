@@ -37,6 +37,216 @@ int H,W,BlurMode,PixelSkips,SampleSkips;
 
 ";
         public readonly static string BlurProgram = @"
+int Normalize(int a){
+    if(a<0)return 0;
+    if(a>255)return 255;
+    return a;
+}
+void CrossMix(__global int* Original,__global int* Target, int CenterX, int CenterY,int D,int H,
+int W,float Radius,float SquareRadius,int SampleSkips,int useWeight){
+    float Count = 0;
+    float R = 0;
+    float G = 0;
+    float B = 0;
+    float A = 0;
+    {
+        for (int x = 0; x < D; x++)
+        {
+            if (x % SampleSkips == 0)
+            {
+                float disX = x - Radius;
+                float PR = (disX * disX);
+                {
+                    int TargetX = CenterX;
+                    int TargetY = CenterY + (int)disX;
+                    if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                    {
+                        int Index=(TargetX*H+TargetY)*4;
+                        if (useWeight == 0)
+                        {
+                            Count++;
+                            R += Original[Index];
+                            G += Original[Index+1];
+                            B += Original[Index+2];
+                            A += Original[Index+3];
+                        }
+                        else
+                        {
+                            float rate = PR / SquareRadius;
+                            R += Original[Index]*rate;
+                            G += Original[Index+1]*rate;
+                            B += Original[Index+2]*rate;
+                            A += Original[Index+3]*rate;
+                            Count += rate;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    {
+        for (int x = 0; x < D; x++)
+        {
+            if (x % SampleSkips == 0)
+            {
+                float disX = x - Radius;
+                float PR = (disX * disX);
+                {
+                    int TargetX = CenterX + (int)disX;
+                    int TargetY = CenterY;
+                    if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                    {
+                        int Index=(TargetX*H+TargetY)*4;
+                        if (useWeight == 0)
+                        {
+                            Count++;
+                            R += Original[Index];
+                            G += Original[Index+1];
+                            B += Original[Index+2];
+                            A += Original[Index+3];
+                        }
+                        else
+                        {
+                            float rate = PR / SquareRadius;
+                            R += Original[Index]*rate;
+                            G += Original[Index+1]*rate;
+                            B += Original[Index+2]*rate;
+                            A += Original[Index+3]*rate;
+                            Count += rate;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    {
+        int Index=(CenterX*H+CenterY)*4;
+        if(Count!=0){
+            Target[Index+0]=Normalize((int)(R/Count));
+            Target[Index+1]=Normalize((int)(G/Count));
+            Target[Index+2]=Normalize((int)(B/Count));
+            Target[Index+3]=Normalize((int)(A/Count));
+        }
+        else{
+            Target[Index+0]=0;
+            Target[Index+1]=0;
+            Target[Index+2]=0;
+            Target[Index+3]=0;
+        }
+    }
+}
+void VerticalMix(__global int* Original,__global int* Target, int CenterX, int CenterY,int D,int H,
+int W,float Radius,float SquareRadius,int SampleSkips,int useWeight){
+    float Count = 0;
+    float R = 0;
+    float G = 0;
+    float B = 0;
+    float A = 0;
+    for (int x = 0; x < D; x++)
+    {
+        if (x % SampleSkips == 0)
+        {
+            float disX = x - Radius;
+            float PR = (disX * disX);
+            {
+                int TargetX = CenterX;
+                int TargetY = CenterY + (int)disX;
+                if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                {
+                    int Index=(TargetX*H+TargetY)*4;
+                    if (useWeight == 0)
+                    {
+                        Count++;
+                        R += Original[Index];
+                        G += Original[Index+1];
+                        B += Original[Index+2];
+                        A += Original[Index+3];
+                    }
+                    else
+                    {
+                        float rate = PR / SquareRadius;
+                        R += Original[Index]*rate;
+                        G += Original[Index+1]*rate;
+                        B += Original[Index+2]*rate;
+                        A += Original[Index+3]*rate;
+                        Count += rate;
+                    }
+                }
+            }
+        }
+    }
+    {
+        int Index=(CenterX*H+CenterY)*4;
+        if(Count!=0){
+            Target[Index+0]=Normalize((int)(R/Count));
+            Target[Index+1]=Normalize((int)(G/Count));
+            Target[Index+2]=Normalize((int)(B/Count));
+            Target[Index+3]=Normalize((int)(A/Count));
+        }
+        else{
+            Target[Index+0]=0;
+            Target[Index+1]=0;
+            Target[Index+2]=0;
+            Target[Index+3]=0;
+        }
+    }
+}
+void HorizontalMix(__global int* Original,__global int* Target, int CenterX, int CenterY,int D,int H,
+int W,float Radius,float SquareRadius,int SampleSkips,int useWeight){
+    float Count = 0;
+    float R = 0;
+    float G = 0;
+    float B = 0;
+    float A = 0;
+    for (int x = 0; x < D; x++)
+    {
+        if (x % SampleSkips == 0)
+        {
+            float disX = x - Radius;
+            float PR = (disX * disX);
+            {
+                int TargetX = CenterX + (int)disX;
+                int TargetY = CenterY;
+                if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
+                {
+                    int Index=(TargetX*H+TargetY)*4;
+                    if (useWeight == 0)
+                    {
+                        Count++;
+                        R += Original[Index];
+                        G += Original[Index+1];
+                        B += Original[Index+2];
+                        A += Original[Index+3];
+                    }
+                    else
+                    {
+                        float rate = PR / SquareRadius;
+                        R += Original[Index]*rate;
+                        G += Original[Index+1]*rate;
+                        B += Original[Index+2]*rate;
+                        A += Original[Index+3]*rate;
+                        Count += rate;
+                    }
+                }
+            }
+        }
+    }
+    {
+        int Index=(CenterX*H+CenterY)*4;
+        if(Count!=0){
+            Target[Index+0]=Normalize((int)(R/Count));
+            Target[Index+1]=Normalize((int)(G/Count));
+            Target[Index+2]=Normalize((int)(B/Count));
+            Target[Index+3]=Normalize((int)(A/Count));
+        }
+        else{
+            Target[Index+0]=0;
+            Target[Index+1]=0;
+            Target[Index+2]=0;
+            Target[Index+3]=0;
+        }
+    }
+}
 void AreaMix(__global int* Original,__global int* Target, int CenterX, int CenterY,int D,int H,int W,float Radius,float SquareRadius,
             int SampleSkips,int isRoundSample,int useWeight){
     float Count = 0;
@@ -90,48 +300,48 @@ void AreaMix(__global int* Original,__global int* Target, int CenterX, int Cente
     {
         for (int x = 0; x < D; x++)
         {
-        //if (x % SampleSkips == 0)
-            for (int y = 0; y < D; y++)
-            {
-                // if (y % SampleSkips == 0)
-                //{
-                  int TargetX = CenterX + x - (int)Radius;
-                  int TargetY = CenterY + y - (int)Radius;
-                  if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
-                  {
-                    int Index=(TargetX*H+TargetY)*4;
-                    if (useWeight == 1)
+            if (x % SampleSkips == 0)
+                for (int y = 0; y < D; y++)
+                {
+                     if (y % SampleSkips == 0)
                     {
-                        float disX = x - Radius;
-                        float disY = y - Radius;
-                        float PR = (disX * disX + disY * disY);
-                        float rate = PR / SquareRadius;
-                        R += Original[Index]*rate;
-                        G += Original[Index+1]*rate;
-                        B += Original[Index+2]*rate;
-                        A += Original[Index+3]*rate;
-                        Count += rate;
-                    }
-                    else
+                    int TargetX = CenterX + x - (int)Radius;
+                    int TargetY = CenterY + y - (int)Radius;
+                    if (TargetX >= 0 && TargetX < W && TargetY >= 0 && TargetY < H)
                     {
-                        Count++;
-                        R += Original[Index];
-                        G += Original[Index+1];
-                        B += Original[Index+2];
-                        A += Original[Index+3];
+                        int Index=(TargetX*H+TargetY)*4;
+                        if (useWeight == 1)
+                        {
+                            float disX = x - Radius;
+                            float disY = y - Radius;
+                            float PR = (disX * disX + disY * disY);
+                            float rate = PR / SquareRadius;
+                            R += Original[Index]*rate;
+                            G += Original[Index+1]*rate;
+                            B += Original[Index+2]*rate;
+                            A += Original[Index+3]*rate;
+                            Count += rate;
+                        }
+                        else
+                        {
+                            Count++;
+                            R += Original[Index];
+                            G += Original[Index+1];
+                            B += Original[Index+2];
+                            A += Original[Index+3];
+                        }
                     }
                 }
-                //}
             }
         }
     }
     {
         int Index=(CenterX*H+CenterY)*4;
         if(Count!=0){
-            Target[Index+0]=(int)(R/Count);
-            Target[Index+1]=(int)(G/Count);
-            Target[Index+2]=(int)(B/Count);
-            Target[Index+3]=(int)(A/Count);
+            Target[Index+0]=Normalize((int)(R/Count));
+            Target[Index+1]=Normalize((int)(G/Count));
+            Target[Index+2]=Normalize((int)(B/Count));
+            Target[Index+3]=Normalize((int)(A/Count));
         }
         else{
             Target[Index+0]=0;
@@ -168,17 +378,20 @@ BlurMode=ImgBlurMode;
                 if(y%PixelSkips==0){
                     if(BlurMode==0){
                         AreaMix(InBitmap,OutBitmap,x,y,D,H,W,Radius,SquareRadius,SampleSkips,isRoundSample,useWeight);
-                        //OutBitmap[index]=FuncResult[0];
-                        //OutBitmap[index+1]=FuncResult[1];
-                        //OutBitmap[index+2]=FuncResult[2];
-                        //OutBitmap[index+3]=FuncResult[3];
+                    }else if (BlurMode == 1)
+                    {
+                        VerticalMix(InBitmap,OutBitmap,x,y,D,H,W,Radius,SquareRadius,SampleSkips,useWeight);
+                    }else if (BlurMode == 2)
+                    {
+                        HorizontalMix(InBitmap,OutBitmap,x,y,D,H,W,Radius,SquareRadius,SampleSkips,useWeight);
+                    }else if (BlurMode == 3)
+                    {
+                        CrossMix(InBitmap,OutBitmap,x,y,D,H,W,Radius,SquareRadius,SampleSkips,useWeight);
                     }else{
-
-                    OutBitmap[index]=InBitmap[index];
-                    OutBitmap[index+1]=InBitmap[index+1];
-                    OutBitmap[index+2]=InBitmap[index+2];
-                    OutBitmap[index+3]=InBitmap[index+3];
-                                    
+                        OutBitmap[index]=InBitmap[index];
+                        OutBitmap[index+1]=InBitmap[index+1];
+                        OutBitmap[index+2]=InBitmap[index+2];
+                        OutBitmap[index+3]=InBitmap[index+3];
                     }
                 }else{
                     OutBitmap[index]=InBitmap[index];

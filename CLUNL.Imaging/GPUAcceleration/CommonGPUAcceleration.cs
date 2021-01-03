@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CLUNL.Imaging.GPUAcceleration
 {
-    public static class CommonGPUAcceleration
+    public class CommonGPUAcceleration
     {
         static CommonGPUAcceleration()
         {
@@ -20,13 +20,20 @@ namespace CLUNL.Imaging.GPUAcceleration
             {
                 //Get all gpus.
                 ErrorCode ec;
-                var Platforms = Cl.GetPlatformIDs(out ec);
+                var Platforms = Cl.GetPlatformIDs(out ec); 
+                if (ec is not ErrorCode.Success)
+                {
+                    throw new Exception("Failed on init library.");
+                }
                 platforms.AddRange(Platforms);
                 foreach (var item in Platforms)
                 {
-                    devs.AddRange(Cl.GetDeviceIDs(item, DeviceType.Gpu, out ec));
+                    devs.AddRange(Cl.GetDeviceIDs(item, DeviceType.All, out ec));
+                    if (ec is not ErrorCode.Success)
+                    {
+                        throw new Exception("Failed on init library.");
+                    }
                 }
-                SetGPU(0);// Ensure that there is always a GPU selected.
             }
         }
         public static List<Platform> EnumeratePlatforms() => platforms;
@@ -102,11 +109,6 @@ namespace CLUNL.Imaging.GPUAcceleration
             {
                 throw new Exception(ec.ToString());
             }
-        }
-        public static unsafe IntPtr ToIntPtr(this int[] obj)
-        {
-            IntPtr PtrA = IntPtr.Zero;
-            fixed (int* Ap = obj) return new IntPtr(Ap);
         }
         public static void SetArg(Kernel kernel,uint index,IMem buffer)
         {

@@ -201,7 +201,11 @@ namespace ImageUtilities
             foreach (var item in gpus)
             {
                 ErrorCode ec;
-                string Name = Cl.GetDeviceInfo(item, DeviceInfo.Name, out ec) + "," + Cl.GetPlatformInfo(Cl.GetDeviceInfo(item, DeviceInfo.Platform, out ec).CastTo<Platform>(), PlatformInfo.Name, out ec);
+                string Name = Cl.GetDeviceInfo(item, DeviceInfo.Name, out ec)
+                    + "," +
+                    Cl.GetPlatformInfo(Cl.GetDeviceInfo(item, DeviceInfo.Platform, out ec).CastTo<Platform>(), PlatformInfo.Name, out ec)+
+                     "," +
+                    Cl.GetPlatformInfo(Cl.GetDeviceInfo(item, DeviceInfo.Platform, out ec).CastTo<Platform>(), PlatformInfo.Version, out ec);
                 VariablePool.GPUs.Add(Name);
             }
             ToBlankPage();
