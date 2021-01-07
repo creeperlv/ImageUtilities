@@ -1,4 +1,5 @@
 ﻿using CLUNL.Imaging;
+using CLUNL.Imaging.GPUAcceleration;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -53,10 +54,10 @@ namespace ImageUtilities
         int BlurMode = 0;
         int AccelerationMode = 0;
         bool isRoundRange;
-        bool useWeight=false;
+        bool useWeight = false;
         public void ProcessImage(Bitmap Processing, Bitmap OutputBitmap, Action action = null)
         {
-            RadiusValue= (float)Radius.Value;
+            RadiusValue = (float)Radius.Value;
             PixelSkipCount = (float)PixelSkip.Value + 1;
             SamplePixelSkipCount = (float)SamplePixelSkip.Value + 1;
             AccelerationMode = ComputeMode.SelectedIndex;
@@ -67,19 +68,38 @@ namespace ImageUtilities
             }
             isRoundRange = RoundRange.IsChecked.Value;
             useWeight = UseWeightedSample.IsChecked.Value;
-            ProcessorArguments arguments = new ProcessorArguments(RadiusValue,PixelSkipCount, SamplePixelSkipCount,BlurMode, AccelerationMode, isRoundRange,useWeight);
+            ProcessorArguments arguments = new ProcessorArguments(RadiusValue, PixelSkipCount, SamplePixelSkipCount, BlurMode, AccelerationMode, isRoundRange, useWeight);
             Task.Run(() =>
             {
-                BlurProcessor.CurrentBlurProcessor.ProcessImage(Processing, OutputBitmap, arguments, () => {
-
-                    Dispatcher.Invoke(() =>
+                try
+                {
+                    BlurProcessor.CurrentBlurProcessor.ProcessImage(Processing, OutputBitmap, arguments, () =>
                     {
-                        UpdateView(OutputBitmap);
-                        MainWindow.CurrentWindow.UnlockMainArea();
-                        if (action is not null) action();
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            UpdateView(OutputBitmap);
+                            MainWindow.CurrentWindow.UnlockMainArea();
+                            if (action is not null) action();
+                        });
+                        GC.Collect();
                     });
-                    GC.Collect();
-                });
+                }
+                catch (Exception e)
+                {
+                    if (e is CLProgramCompilationException)
+                    {
+                        Dispatcher.Invoke(() => { MainWindow.CurrentWindow.ShowDialog("Error in OpenCL",
+                            "Cannot compile CL program for target CL device, you can try to re-try on other device/platform."); });
+                    }
+                    else
+                    {
+                        Dispatcher.Invoke(() => {
+                            MainWindow.CurrentWindow.ShowDialog("Error in OpenCL",
+      "Error happened in the CL runtime:"+e.Message);
+                        });
+                    }
+                }
 
             });
         }
@@ -110,7 +130,7 @@ namespace ImageUtilities
         {
             foreach (var item in VariablePool.GPUs)
             {
-                ComputeMode.Items.Add(new ComboBoxItem() { Content= item });
+                ComputeMode.Items.Add(new ComboBoxItem() { Content = item });
             }
         }
     }

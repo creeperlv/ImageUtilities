@@ -85,18 +85,18 @@ namespace CLUNL.Imaging.GPUAcceleration
             program = Cl.CreateProgramWithSource(CurrentContext.Value, 1, new[] { sourceCode }, null, out ec);
             if (ec is not ErrorCode.Success)
             {
-                throw new Exception("Cannot create program.");
+                throw new CLProgramCompilationException();
             }
             ec = Cl.BuildProgram(program.Value, 1, new[] { GPUInUse }, string.Empty, null, IntPtr.Zero);
             if (ec is not ErrorCode.Success)
             {
-                throw new Exception("Cannot create program.");
+                throw new CLProgramCompilationException();
             }
 
             Kernel kernel = Cl.CreateKernel(program.Value, targetKernel, out ec);
             if (ec is not ErrorCode.Success)
             {
-                throw new Exception("Cannot create kernel.");
+                throw new CLProgramCompilationException();
             }
 
             return kernel;
@@ -189,7 +189,7 @@ namespace CLUNL.Imaging.GPUAcceleration
             ec = Cl.EnqueueNDRangeKernel(CurrentQueue, kernel, WorkDim, null, GlobalWorkSize, LocalWorkSize, 0, null, out _);
             if (ec is not ErrorCode.Success)
             {
-                throw new Exception(ec.ToString());
+                throw new CLRuntimeException();
             }
             Cl.Finish(CurrentQueue);
         }
@@ -200,7 +200,7 @@ namespace CLUNL.Imaging.GPUAcceleration
              = Cl.EnqueueReadBuffer(CurrentQueue, DeviceMem, Bool.True,  obj, 0, null, out _);
             if (ec is not ErrorCode.Success)
             {
-                throw new Exception(ec.ToString());
+                throw new ReadArgumentException();
             }
         }
     }
