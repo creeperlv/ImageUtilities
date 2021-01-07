@@ -95,5 +95,12 @@
             </Border>
 
         </Grid>
+        <Grid Background="#4000" Name="ProgressBarOverlay" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" >
+                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="5" Foreground="#28E" Background="Transparent" BorderThickness="0"/>
+                <TextBlock Text="Working..." TextAlignment="Center"/>
+                <TextBlock Text="(Progress Description)" Name="WorkDescription" TextAlignment="Center"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

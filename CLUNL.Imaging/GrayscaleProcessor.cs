@@ -76,5 +76,9 @@ namespace CLUNL.Imaging
                 OnCompleted();
             GC.Collect();
         }
+        public int GetProgressStatusCode()
+        {
+            return -1;
+        }
     }
 }

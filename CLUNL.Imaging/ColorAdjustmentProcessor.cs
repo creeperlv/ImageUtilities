@@ -112,5 +112,9 @@ namespace CLUNL.Imaging
                 OnCompleted();
             }
         }
+        public int GetProgressStatusCode()
+        {
+            return -1;
+        }
     }
 }

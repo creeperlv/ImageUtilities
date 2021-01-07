@@ -126,12 +126,13 @@ namespace ImageUtilities
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            if (VariablePool.CurrentBitmap is null) {
+            if (VariablePool.CurrentBitmap is null)
+            {
                 ShowDialog("Error", "There's nothing to save.");
                 return;
             }
             SaveFile(VariablePool.CurrentFile);
-            ShowDialog("Done","Image have been saved to:"+VariablePool.CurrentFile);
+            ShowDialog("Done", "Image have been saved to:" + VariablePool.CurrentFile);
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
@@ -169,7 +170,7 @@ namespace ImageUtilities
                 TargetFormat = ImageFormat.Icon;
             VariablePool.CurrentBitmap.Save(FileName, TargetFormat);
         }
-        public void ShowDialog(string Title,string Message)
+        public void ShowDialog(string Title, string Message)
         {
             DialogTitle.Text = Title;
             DialogContent.Text = Message;
@@ -197,21 +198,21 @@ namespace ImageUtilities
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var gpus=CommonGPUAcceleration.EnumerateGPUs();
+            var gpus = CommonGPUAcceleration.EnumerateGPUs();
             foreach (var item in gpus)
             {
                 ErrorCode ec;
                 string Name = Cl.GetDeviceInfo(item, DeviceInfo.Name, out ec)
                     + "," +
-                    Cl.GetPlatformInfo(Cl.GetDeviceInfo(item, DeviceInfo.Platform, out ec).CastTo<Platform>(), PlatformInfo.Name, out ec)+
+                    Cl.GetPlatformInfo(Cl.GetDeviceInfo(item, DeviceInfo.Platform, out ec).CastTo<Platform>(), PlatformInfo.Name, out ec) +
                      "," +
                     Cl.GetPlatformInfo(Cl.GetDeviceInfo(item, DeviceInfo.Platform, out ec).CastTo<Platform>(), PlatformInfo.Version, out ec);
                 VariablePool.GPUs.Add(Name);
             }
             ToBlankPage();
-//            CommonGPUAcceleration.SetGPU(0);
-//            ShowDialog("OpenCL", ""+VariablePool.GPUs[1]);
-//            var Kernel = CommonGPUAcceleration.Compile(BlurProcessor.BlurProgram, "ProcessImage");
+            //            CommonGPUAcceleration.SetGPU(0);
+            //            ShowDialog("OpenCL", ""+VariablePool.GPUs[1]);
+            //            var Kernel = CommonGPUAcceleration.Compile(BlurProcessor.BlurProgram, "ProcessImage");
         }
 
         private void Button_Click_7(object sender, RoutedEventArgs e)
@@ -220,7 +221,19 @@ namespace ImageUtilities
             CentralFrame.Children.Add(new AboutPage());
             GC.Collect();
         }
-
+        public void UpdateProgressDescriptionText(string text)
+        {
+            if (text is not null)
+                WorkDescription.Text = text;
+        }
+        public void ShowProgressOverlay()
+        {
+            ProgressBarOverlay.Visibility = Visibility.Visible;
+        }
+        public void HideProgressOverlay()
+        {
+            ProgressBarOverlay.Visibility = Visibility.Collapsed;
+        }
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
             CentralFrame.Children.Clear();

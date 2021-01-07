@@ -12,6 +12,7 @@ namespace CLUNL.Imaging
     {
         void ProcessImage(Bitmap Processing, Bitmap OutputBitmap,ProcessorArguments arguments, Action OnCompleted = null);
         Color Process(Color c);
+        int GetProgressStatusCode();
     }
     public record ProcessorArguments
     {

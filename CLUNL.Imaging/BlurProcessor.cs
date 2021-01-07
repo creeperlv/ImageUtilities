@@ -448,5 +448,9 @@ namespace CLUNL.Imaging
                 return Color.FromArgb((byte)(A / Count), (byte)(R / Count), (byte)(G / Count), (byte)(B / Count));
             else return Color.Transparent;
         }
+        public int GetProgressStatusCode()
+        {
+            return -1;
+        }
     }
 }
