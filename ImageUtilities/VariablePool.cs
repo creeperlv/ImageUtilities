@@ -8,11 +8,13 @@ using System.Windows.Interop;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Drawing.Drawing2D;
+using CLUNL.Imaging;
 
 namespace ImageUtilities
 {
     static class VariablePool
     {
+        public static IImageProcessor OnGoingProcessor = null;
         public static Bitmap CurrentBitmap;
         public static Bitmap CurrentBitmap_DownSized;
         //public static Bitmap CurrentBitmap_Original;

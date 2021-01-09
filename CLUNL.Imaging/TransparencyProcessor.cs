@@ -112,5 +112,10 @@ namespace CLUNL.Imaging
         {
             return -1;
         }
+
+        public string GetProgressDescription()
+        {
+            return "Processing.";
+        }
     }
 }
