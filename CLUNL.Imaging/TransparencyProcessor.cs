@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CLUNL.Imaging.Bitmaps;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -75,6 +76,55 @@ namespace CLUNL.Imaging
             }
             return c;
         }
+        public (int,int,int,int) Process((int,int,int,int) c)
+        {
+            if (isTransparencyCutout)
+            {
+                if (CutoutMode2 == 0)
+                {
+                    if (c.Item1 <= R1Value && c.Item2 <= G1Value && c.Item3 <= B1Value)
+                    {
+                        return (c.Item1, c.Item2, c.Item3,0);
+                    }
+                }
+                else
+                if (CutoutMode2 == 1)
+                    if (c.Item1 <= R1Value || c.Item2 <= G1Value || c.Item3 <= B1Value)
+                    {
+                        return (c.Item1, c.Item2, c.Item3, 0);
+                    }
+            }
+            if (isMixColor)
+            {
+
+                float AlphaIntensity = 0.0f;
+                {
+                    float total = c.Item1 * RIntensity + c.Item2 * GIntensity + c.Item3 * BIntensity;
+                    float rate = total / (255f * RGBIntensity);
+                    float rate2 = rate * AIntensity;
+                    //AlphaIntensity = 1-rate2;
+                    AlphaIntensity = rate2;
+                    if (CutoutMode1 == 1)
+                        if (c.Item1 >= RValue && c.Item2 >= GValue && c.Item3 >= BValue)
+                        {
+                            rate2 = ((float)c.Item4) / 255f;
+                            AlphaIntensity = rate2;
+                        }
+                    if (CutoutMode1 == 2)
+                        if (c.Item1 >= RValue || c.Item2 >= GValue || c.Item3 >= BValue)
+                        {
+                            rate2 = ((float)c.Item4) / 255f;
+                            //rate2 = AIntensity;
+                            AlphaIntensity = rate2;
+                        }
+
+                }
+                var A = (byte)Math.Min((Byte.MaxValue * AlphaIntensity), Byte.MaxValue);
+                var Result = (c.Item1, c.Item2, c.Item3,A);
+                return Result;
+            }
+            return c;
+        }
 
 
         float GetIntensity(double value) => (float)value / 255f;
@@ -90,6 +140,8 @@ namespace CLUNL.Imaging
             BIntensity = GetIntensity(BValue);
             AIntensity = GetIntensity(AValue);
 
+            VBitmap bitmap = VBitmap.FromBitmap(Processing);
+
             RGBIntensity = RIntensity + BIntensity + GIntensity;
 
             int WB = Processing.Width;
@@ -98,14 +150,17 @@ namespace CLUNL.Imaging
             {
                 for (int h = 0; h < H; h++)
                 {
-                    var c = Processing.GetPixel(w, h);
-                    OutputBitmap.SetPixel(w, h, Process(c));
+                    bitmap.SetPixel(w, h, Process(bitmap.GetPixel(w, h)));
                 }
             }
+            bitmap.ApplyToBitmap(OutputBitmap);
             if (OnCompleted is not null)
             {
                 OnCompleted();
             }
+            bitmap.Dispose();
+            bitmap = null;
+            GC.Collect();
         }
 
         public int GetProgressStatusCode()

@@ -28,7 +28,7 @@ namespace CLUNL.Imaging.GPUAcceleration
             }
             return result;
         }
-        public static void WriteToBitmap(Bitmap TargetMap, int[] data)
+        public static void WriteToBitmap(Bitmap TargetMap,ref int[] data)
         {
             int W = TargetMap.Width;
             int H = TargetMap.Height;

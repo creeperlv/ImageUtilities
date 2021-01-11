@@ -80,7 +80,7 @@ namespace CLUNL.Imaging
                 CommonGPUAcceleration.SetArg(Kernel, 9, A9);
                 CommonGPUAcceleration.Execute(Kernel, 2, new IntPtr[] { new(Processing.Width), new(Processing.Height) }, null) ;
                 CommonGPUAcceleration.ReadArg<int>(A9,ref result);
-                Utilities.WriteToBitmap(OutputBitmap, result);
+                Utilities.WriteToBitmap(OutputBitmap,ref result);
                 {
                     //Wipe.
                     Cl.ReleaseMemObject(A0);
