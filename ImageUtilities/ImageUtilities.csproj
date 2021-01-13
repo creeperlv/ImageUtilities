@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CarvefUI\" />
+    <Folder Include="CarveUI\" />
   </ItemGroup>
 
   <ItemGroup>

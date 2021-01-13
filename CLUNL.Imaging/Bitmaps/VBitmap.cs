@@ -186,6 +186,13 @@ namespace CLUNL.Imaging.Bitmaps
         {
             SetPixel((BigInteger)x, (BigInteger)y, color);
         }
+
+        public static LBitmap FromBitmap(Bitmap bitmap)
+        {
+            LBitmap result = new(bitmap.Width, bitmap.Height);
+            result.realData[0].data= Utilities.BitmapToIntArray(bitmap);
+            return result;
+        }
     }
     public interface IBitmapI
     {
