@@ -36,6 +36,7 @@ namespace ImageUtilities
         int CutoutMode2 = 0;
         bool isTransparencyCutout = false;
         bool isMixColor = false;
+        bool isInvertIntensity = false;
         Bitmap Current;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -69,9 +70,10 @@ namespace ImageUtilities
             AValue = (float)Alpha.Value;
             isTransparencyCutout = TransparencyCutout.IsChecked.Value;
             isMixColor = MixColorTransparency.IsChecked.Value;
+            isInvertIntensity = IsInvertIntensity.IsChecked.Value;
             CutoutMode1 = CutoutMode.SelectedIndex;
             CutoutMode2 = CutoutModeTC.SelectedIndex;
-            ProcessorArguments arguments = new ProcessorArguments(RValue, GValue, BValue, AValue, R1Value, G1Value, B1Value, (float)CutoutMode1, (float)CutoutMode2, isMixColor, isTransparencyCutout);
+            ProcessorArguments arguments = new ProcessorArguments(RValue, GValue, BValue, AValue, R1Value, G1Value, B1Value, (float)CutoutMode1, (float)CutoutMode2, isMixColor, isTransparencyCutout, isInvertIntensity);
             Task.Run(() =>
             {
                 TransparencyProcessor.CurrentTransparencyProcessor.ProcessImage(Processing, OutputBitmap, arguments, () => {

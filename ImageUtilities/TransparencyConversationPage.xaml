@@ -23,6 +23,7 @@
                     <Expander Header="Mix Color Transparency Intensity">
                         <StackPanel>
                             <CheckBox IsChecked="true" Name="MixColorTransparency" Content="Enable Mix Color Transparency"></CheckBox>
+                            <CheckBox IsChecked="false" Name="IsInvertIntensity" Content="Is Invert Intensity"></CheckBox>
                             <TextBlock Text="R"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>

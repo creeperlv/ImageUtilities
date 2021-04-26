@@ -18,6 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CarveUI\**" />
+    <EmbeddedResource Remove="CarveUI\**" />
+    <None Remove="CarveUI\**" />
+    <Page Remove="CarveUI\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="ImageUtilities_Icon.png" />
     <None Remove="TileBackground.png" />
   </ItemGroup>
@@ -29,10 +36,6 @@
   <ItemGroup>
     <Resource Include="ImageUtilities_Icon.png" />
     <Resource Include="TileBackground.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CarveUI\" />
   </ItemGroup>
 
   <ItemGroup>

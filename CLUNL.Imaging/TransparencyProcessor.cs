@@ -27,6 +27,7 @@ namespace CLUNL.Imaging
         float CutoutMode2 = 0;
         bool isTransparencyCutout = false;
         bool isMixColor = false;
+        bool isInvertIntensity = false;
         public Color Process(Color c)
         {
             if (isTransparencyCutout)
@@ -70,6 +71,8 @@ namespace CLUNL.Imaging
                         }
 
                 }
+                if (isInvertIntensity)
+                    AlphaIntensity = 1 - AlphaIntensity;
                 var A = (byte)Math.Min((Byte.MaxValue * AlphaIntensity), Byte.MaxValue);
                 Color Result = Color.FromArgb(A, c.R, c.G, c.B);
                 return Result;
@@ -133,7 +136,7 @@ namespace CLUNL.Imaging
             if (arguments is not null)
             {
                 arguments.ApplyFloats(ref RValue, ref GValue, ref BValue, ref AValue, ref R1Value, ref G1Value, ref B1Value, ref CutoutMode1, ref CutoutMode2);
-                arguments.ApplyBools(ref isMixColor, ref isTransparencyCutout);
+                arguments.ApplyBools(ref isMixColor, ref isTransparencyCutout,ref isInvertIntensity);
             }
             RIntensity = GetIntensity(RValue);
             GIntensity = GetIntensity(GValue);
