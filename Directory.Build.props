@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Creeper Lv</Authors>
+    <Product>Image Utilities</Product>
+    <Copyright>Copyright (C) 2020-2022 Creeper Lv</Copyright>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+	<PropertyGroup>
+		<Version>0.1.2.0</Version>
+	</PropertyGroup>
+</Project>
